@@ -9,6 +9,7 @@ type Candidate = {
   date_of_birth: string;
   football_id_code: string;
   similarity: number;
+  already_on_this_team: boolean;
 };
 
 type Stage = "form" | "reviewing" | "registered";
