@@ -15,7 +15,7 @@ export default function RecordEventForm({
   lineupPlayers,
 }: {
   matchId: string;
-  lineupPlayers: { id: string; full_name: string; teamName: string }[];
+  lineupPlayers: { id: string; full_name: string; alias: string | null; teamName: string }[];
 }) {
   const [eventType, setEventType] = useState("goal");
   const [playerId, setPlayerId] = useState(lineupPlayers[0]?.id ?? "");
@@ -73,7 +73,8 @@ export default function RecordEventForm({
         >
           {lineupPlayers.map((p) => (
             <option key={p.id} value={p.id}>
-              {p.full_name} ({p.teamName})
+              {p.full_name}
+              {p.alias ? ` "${p.alias}"` : ""} ({p.teamName})
             </option>
           ))}
         </select>

@@ -41,14 +41,17 @@ export default async function MatchCenterPage({
   async function fetchRoster(teamId: string) {
     const { data } = await supabase
       .from("team_players")
-      .select("player_id, players(id, full_name)")
+      .select("player_id, players(id, full_name, alias)")
       .eq("team_id", teamId)
       .is("left_at", null);
 
-    type Row = { player_id: string; players: { id: string; full_name: string } | null };
+    type Row = {
+      player_id: string;
+      players: { id: string; full_name: string; alias: string | null } | null;
+    };
     return ((data ?? []) as unknown as Row[])
       .map((r) => r.players)
-      .filter((p): p is { id: string; full_name: string } => p !== null);
+      .filter((p): p is { id: string; full_name: string; alias: string | null } => p !== null);
   }
 
   const [homeRoster, awayRoster] = await Promise.all([
@@ -58,10 +61,14 @@ export default async function MatchCenterPage({
 
   const { data: lineupRows } = await supabase
     .from("match_lineups")
-    .select("player_id, team_id, players(full_name)")
+    .select("player_id, team_id, players(full_name, alias)")
     .eq("match_id", matchId);
 
-  type LineupRow = { player_id: string; team_id: string; players: { full_name: string } | null };
+  type LineupRow = {
+    player_id: string;
+    team_id: string;
+    players: { full_name: string; alias: string | null } | null;
+  };
   const lineups = (lineupRows ?? []) as unknown as LineupRow[];
 
   const homeLineupIds = lineups
@@ -76,6 +83,7 @@ export default async function MatchCenterPage({
     .map((l) => ({
       id: l.player_id,
       full_name: l.players!.full_name,
+      alias: l.players!.alias,
       teamName:
         l.team_id === matchDetail.home_team_id
           ? matchDetail.home?.name ?? "Home"
@@ -84,7 +92,7 @@ export default async function MatchCenterPage({
 
   const { data: eventRows } = await supabase
     .from("match_events")
-    .select("id, event_type, minute, source, created_at, players(full_name)")
+    .select("id, event_type, minute, source, created_at, players(full_name, alias)")
     .eq("match_id", matchId)
     .order("created_at", { ascending: true });
 
@@ -94,7 +102,7 @@ export default async function MatchCenterPage({
     minute: number | null;
     source: string;
     created_at: string;
-    players: { full_name: string } | null;
+    players: { full_name: string; alias: string | null } | null;
   };
   const events = (eventRows ?? []) as unknown as EventRow[];
 
@@ -160,6 +168,7 @@ export default async function MatchCenterPage({
               >
                 <p className="font-medium">
                   {e.event_type.replace("_", " ")} · {e.players?.full_name}
+                  {e.players?.alias ? ` (${e.players.alias})` : ""}
                   {e.minute !== null ? ` (${e.minute}')` : ""}
                 </p>
                 <p className="text-xs text-zinc-500">

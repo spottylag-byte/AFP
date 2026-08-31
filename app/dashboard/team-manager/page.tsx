@@ -29,7 +29,9 @@ export default async function TeamManagerDashboard() {
 
   const { data: roster } = await supabase
     .from("team_players")
-    .select("joined_at, players(full_name, date_of_birth, football_id_id, football_ids(code))")
+    .select(
+      "joined_at, players(full_name, alias, date_of_birth, football_id_id, football_ids(code))"
+    )
     .eq("team_id", team.id)
     .is("left_at", null)
     .order("joined_at", { ascending: false });
@@ -38,6 +40,7 @@ export default async function TeamManagerDashboard() {
     joined_at: string;
     players: {
       full_name: string;
+      alias: string | null;
       date_of_birth: string;
       football_ids: { code: string } | null;
     } | null;
@@ -84,7 +87,10 @@ export default async function TeamManagerDashboard() {
                 key={i}
                 className="rounded border border-zinc-200 p-3 text-sm dark:border-zinc-800"
               >
-                <p className="font-medium">{r.players?.full_name}</p>
+                <p className="font-medium">
+                  {r.players?.full_name}
+                  {r.players?.alias ? ` (${r.players.alias})` : ""}
+                </p>
                 <p className="text-zinc-600 dark:text-zinc-400">
                   Born {r.players?.date_of_birth} · {r.players?.football_ids?.code}
                 </p>

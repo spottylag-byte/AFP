@@ -24,11 +24,11 @@ export default async function PublicTeamPage({
 
   const { data: rosterRows } = await supabase
     .from("team_players")
-    .select("player_id, players(full_name)")
+    .select("player_id, players(full_name, alias)")
     .eq("team_id", teamId)
     .is("left_at", null);
 
-  type RosterRow = { player_id: string; players: { full_name: string } | null };
+  type RosterRow = { player_id: string; players: { full_name: string; alias: string | null } | null };
   const roster = (rosterRows ?? []) as unknown as RosterRow[];
 
   return (
@@ -55,6 +55,7 @@ export default async function PublicTeamPage({
               <li key={r.player_id}>
                 <Link href={`/players/${r.player_id}`} className="underline">
                   {r.players?.full_name}
+                  {r.players?.alias ? ` (${r.players.alias})` : ""}
                 </Link>
               </li>
             ))}

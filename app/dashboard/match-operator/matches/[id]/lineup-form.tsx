@@ -13,7 +13,7 @@ export default function LineupForm({
   matchId: string;
   teamId: string;
   teamName: string;
-  roster: { id: string; full_name: string }[];
+  roster: { id: string; full_name: string; alias: string | null }[];
   initiallySelected: string[];
 }) {
   const [selected, setSelected] = useState<Set<string>>(new Set(initiallySelected));
@@ -58,6 +58,7 @@ export default function LineupForm({
                   onChange={() => toggle(p.id)}
                 />
                 {p.full_name}
+                {p.alias ? ` (${p.alias})` : ""}
               </label>
             </li>
           ))}

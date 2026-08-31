@@ -21,13 +21,14 @@ export async function createTeam(name: string) {
 }
 
 export async function searchExistingPlayerForTeam(
-  fullName: string,
+  firstName: string,
+  lastName: string,
   dateOfBirth: string,
   teamId: string
 ) {
   const supabase = await createClient();
   const { data, error } = await supabase.rpc("search_existing_player", {
-    p_full_name: fullName,
+    p_full_name: `${firstName} ${lastName}`,
     p_date_of_birth: dateOfBirth,
     p_team_id: teamId,
   });
@@ -37,16 +38,20 @@ export async function searchExistingPlayerForTeam(
 }
 
 export async function registerPlayerForTeam(
-  fullName: string,
+  firstName: string,
+  lastName: string,
   dateOfBirth: string,
-  teamId: string
+  teamId: string,
+  alias: string | null
 ) {
   const supabase = await createClient();
   const { data, error } = await supabase
     .rpc("register_player", {
-      p_full_name: fullName,
+      p_first_name: firstName,
+      p_last_name: lastName,
       p_date_of_birth: dateOfBirth,
       p_team_id: teamId,
+      p_alias: alias,
     })
     .single();
 

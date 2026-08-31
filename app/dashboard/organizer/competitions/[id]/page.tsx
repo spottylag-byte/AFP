@@ -173,12 +173,16 @@ export default async function CompetitionDetailPage({
 
   const { data: scorerRows } = await supabase
     .from("player_competition_stats")
-    .select("goals, appearances, players(full_name)")
+    .select("goals, appearances, players(full_name, alias)")
     .eq("competition_id", competitionId)
     .gt("goals", 0)
     .order("goals", { ascending: false });
 
-  type ScorerRow = { goals: number; appearances: number; players: { full_name: string } | null };
+  type ScorerRow = {
+    goals: number;
+    appearances: number;
+    players: { full_name: string; alias: string | null } | null;
+  };
   const scorers = (scorerRows ?? []) as unknown as ScorerRow[];
 
   return (
@@ -366,7 +370,9 @@ export default async function CompetitionDetailPage({
           <ul className="mt-2 flex flex-col gap-1 text-sm">
             {scorers.map((s, i) => (
               <li key={i}>
-                {s.players?.full_name} — {s.goals} goal{s.goals === 1 ? "" : "s"} (
+                {s.players?.full_name}
+                {s.players?.alias ? ` (${s.players.alias})` : ""} — {s.goals} goal
+                {s.goals === 1 ? "" : "s"} (
                 {s.appearances} app{s.appearances === 1 ? "" : "s"})
               </li>
             ))}

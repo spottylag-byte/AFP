@@ -6,6 +6,7 @@ import { createClient } from "@/lib/supabase/client";
 type Candidate = {
   id: string;
   full_name: string;
+  alias: string | null;
   date_of_birth: string;
   football_id_code: string;
   similarity: number;
@@ -15,7 +16,9 @@ type Candidate = {
 type Stage = "form" | "reviewing" | "registered";
 
 export default function RegisterPlayerForm() {
-  const [fullName, setFullName] = useState("");
+  const [firstName, setFirstName] = useState("");
+  const [lastName, setLastName] = useState("");
+  const [alias, setAlias] = useState("");
   const [dateOfBirth, setDateOfBirth] = useState("");
   const [stage, setStage] = useState<Stage>("form");
   const [candidates, setCandidates] = useState<Candidate[]>([]);
@@ -29,10 +32,10 @@ export default function RegisterPlayerForm() {
     setSubmitting(true);
 
     const supabase = createClient();
-    const { data, error: searchError } = await supabase.rpc(
-      "search_existing_player",
-      { p_full_name: fullName, p_date_of_birth: dateOfBirth }
-    );
+    const { data, error: searchError } = await supabase.rpc("search_existing_player", {
+      p_full_name: `${firstName} ${lastName}`,
+      p_date_of_birth: dateOfBirth,
+    });
 
     setSubmitting(false);
 
@@ -52,8 +55,10 @@ export default function RegisterPlayerForm() {
     const supabase = createClient();
     const { data, error: registerError } = await supabase
       .rpc("register_player", {
-        p_full_name: fullName,
+        p_first_name: firstName,
+        p_last_name: lastName,
         p_date_of_birth: dateOfBirth,
+        p_alias: alias || null,
       })
       .single();
 
@@ -78,7 +83,9 @@ export default function RegisterPlayerForm() {
         <button
           onClick={() => {
             setStage("form");
-            setFullName("");
+            setFirstName("");
+            setLastName("");
+            setAlias("");
             setDateOfBirth("");
             setCandidates([]);
             setRegistered(null);
@@ -95,7 +102,7 @@ export default function RegisterPlayerForm() {
     return (
       <div className="mt-6">
         <p className="text-sm text-zinc-600 dark:text-zinc-400">
-          Checking: <strong>{fullName}</strong>, born {dateOfBirth}
+          Checking: <strong>{firstName} {lastName}</strong>, born {dateOfBirth}
         </p>
 
         {candidates.length > 0 ? (
@@ -110,7 +117,10 @@ export default function RegisterPlayerForm() {
                   key={c.id}
                   className="rounded border border-amber-300 bg-amber-50 p-3 text-sm dark:border-amber-800 dark:bg-amber-950"
                 >
-                  <p className="font-medium">{c.full_name}</p>
+                  <p className="font-medium">
+                    {c.full_name}
+                    {c.alias ? ` (${c.alias})` : ""}
+                  </p>
                   <p className="text-zinc-600 dark:text-zinc-400">
                     Born {c.date_of_birth} · {c.football_id_code} · similarity{" "}
                     {(c.similarity * 100).toFixed(0)}%
@@ -152,13 +162,35 @@ export default function RegisterPlayerForm() {
 
   return (
     <form onSubmit={handleCheck} className="mt-6 flex flex-col gap-4">
+      <div className="flex gap-3">
+        <label className="flex flex-1 flex-col gap-1 text-sm">
+          First name
+          <input
+            required
+            type="text"
+            value={firstName}
+            onChange={(e) => setFirstName(e.target.value)}
+            className="rounded border border-zinc-300 px-3 py-2 dark:border-zinc-700 dark:bg-zinc-900"
+          />
+        </label>
+        <label className="flex flex-1 flex-col gap-1 text-sm">
+          Last name
+          <input
+            required
+            type="text"
+            value={lastName}
+            onChange={(e) => setLastName(e.target.value)}
+            className="rounded border border-zinc-300 px-3 py-2 dark:border-zinc-700 dark:bg-zinc-900"
+          />
+        </label>
+      </div>
       <label className="flex flex-col gap-1 text-sm">
-        Full name
+        Alias (optional)
         <input
-          required
           type="text"
-          value={fullName}
-          onChange={(e) => setFullName(e.target.value)}
+          value={alias}
+          onChange={(e) => setAlias(e.target.value)}
+          placeholder="e.g. Jay-Jay"
           className="rounded border border-zinc-300 px-3 py-2 dark:border-zinc-700 dark:bg-zinc-900"
         />
       </label>

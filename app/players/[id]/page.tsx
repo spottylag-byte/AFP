@@ -14,12 +14,17 @@ export default async function PublicPlayerPage({
   // Deliberately does not select date_of_birth -- never shown publicly.
   const { data: player } = await supabase
     .from("players")
-    .select("id, full_name, football_ids(code)")
+    .select("id, full_name, alias, football_ids(code)")
     .eq("id", playerId)
     .is("deleted_at", null)
     .single();
 
-  type Player = { id: string; full_name: string; football_ids: { code: string } | null };
+  type Player = {
+    id: string;
+    full_name: string;
+    alias: string | null;
+    football_ids: { code: string } | null;
+  };
   const p = player as unknown as Player | null;
 
   if (!p) {
@@ -57,7 +62,10 @@ export default async function PublicPlayerPage({
           African Football Platform
         </Link>
       </p>
-      <h1 className="mt-2 text-2xl font-semibold">{p.full_name}</h1>
+      <h1 className="mt-2 text-2xl font-semibold">
+        {p.full_name}
+        {p.alias ? <span className="text-zinc-500"> &quot;{p.alias}&quot;</span> : ""}
+      </h1>
       <p className="mt-1 text-sm font-mono text-zinc-600 dark:text-zinc-400">
         {p.football_ids?.code}
       </p>

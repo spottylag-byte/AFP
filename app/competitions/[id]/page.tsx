@@ -79,12 +79,16 @@ export default async function PublicCompetitionPage({
 
   const { data: scorerRows } = await supabase
     .from("player_competition_stats")
-    .select("goals, player_id, players(full_name)")
+    .select("goals, player_id, players(full_name, alias)")
     .eq("competition_id", competitionId)
     .gt("goals", 0)
     .order("goals", { ascending: false });
 
-  type ScorerRow = { goals: number; player_id: string; players: { full_name: string } | null };
+  type ScorerRow = {
+    goals: number;
+    player_id: string;
+    players: { full_name: string; alias: string | null } | null;
+  };
   const scorers = (scorerRows ?? []) as unknown as ScorerRow[];
 
   return (
@@ -213,6 +217,7 @@ export default async function PublicCompetitionPage({
               <li key={i}>
                 <Link href={`/players/${s.player_id}`} className="underline">
                   {s.players?.full_name}
+                  {s.players?.alias ? ` (${s.players.alias})` : ""}
                 </Link>{" "}
                 — {s.goals} goal{s.goals === 1 ? "" : "s"}
               </li>

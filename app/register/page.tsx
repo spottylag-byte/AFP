@@ -8,7 +8,8 @@ import { SELF_REGISTERABLE_ROLES, type UserRole } from "@/lib/roles";
 
 export default function RegisterPage() {
   const router = useRouter();
-  const [fullName, setFullName] = useState("");
+  const [firstName, setFirstName] = useState("");
+  const [lastName, setLastName] = useState("");
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [role, setRole] = useState<UserRole>("player");
@@ -29,7 +30,8 @@ export default function RegisterPage() {
       options: {
         data: {
           role,
-          full_name: fullName,
+          first_name: firstName,
+          last_name: lastName,
           whatsapp_number: role === "match_operator" ? whatsappNumber : null,
         },
         emailRedirectTo: `${window.location.origin}/auth/callback`,
@@ -68,16 +70,28 @@ export default function RegisterPage() {
     <main className="mx-auto flex min-h-screen max-w-sm flex-col justify-center gap-6 px-6">
       <h1 className="text-2xl font-semibold">Register</h1>
       <form onSubmit={handleSubmit} className="flex flex-col gap-4">
-        <label className="flex flex-col gap-1 text-sm">
-          Full name
-          <input
-            required
-            type="text"
-            value={fullName}
-            onChange={(e) => setFullName(e.target.value)}
-            className="rounded border border-zinc-300 px-3 py-2 dark:border-zinc-700 dark:bg-zinc-900"
-          />
-        </label>
+        <div className="flex gap-3">
+          <label className="flex flex-1 flex-col gap-1 text-sm">
+            First name
+            <input
+              required
+              type="text"
+              value={firstName}
+              onChange={(e) => setFirstName(e.target.value)}
+              className="rounded border border-zinc-300 px-3 py-2 dark:border-zinc-700 dark:bg-zinc-900"
+            />
+          </label>
+          <label className="flex flex-1 flex-col gap-1 text-sm">
+            Last name
+            <input
+              required
+              type="text"
+              value={lastName}
+              onChange={(e) => setLastName(e.target.value)}
+              className="rounded border border-zinc-300 px-3 py-2 dark:border-zinc-700 dark:bg-zinc-900"
+            />
+          </label>
+        </div>
         <label className="flex flex-col gap-1 text-sm">
           Email
           <input
