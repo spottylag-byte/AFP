@@ -95,7 +95,7 @@ begin
       raise exception 'team_manager must specify a team when registering a player';
     end if;
     if not exists (
-      select 1 from teams where id = p_team_id and team_manager_profile_id = auth.uid()
+      select 1 from teams where teams.id = p_team_id and team_manager_profile_id = auth.uid()
     ) then
       raise exception 'team not found or not owned by caller';
     end if;
