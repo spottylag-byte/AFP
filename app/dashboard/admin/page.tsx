@@ -1,3 +1,4 @@
+import Link from "next/link";
 import { requireRole } from "@/lib/auth";
 
 export default async function AdminDashboard() {
@@ -9,6 +10,12 @@ export default async function AdminDashboard() {
       <p className="mt-2 text-zinc-600 dark:text-zinc-400">
         Welcome, {fullName}. Verification and audit tools land in Phase 8.
       </p>
+      <Link
+        href="/dashboard/admin/players/new"
+        className="mt-4 inline-block rounded bg-black px-4 py-2 text-sm text-white dark:bg-white dark:text-black"
+      >
+        Register a player
+      </Link>
     </div>
   );
 }
