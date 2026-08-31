@@ -31,6 +31,18 @@ export async function assignMatchOperator(
   revalidatePath(`/dashboard/organizer/competitions/${competitionId}`);
 }
 
+export async function verifyAndPublishMatch(competitionId: string, matchId: string) {
+  const supabase = await createClient();
+
+  const { error: verifyError } = await supabase.rpc("verify_match", { p_match_id: matchId });
+  if (verifyError) throw new Error(verifyError.message);
+
+  const { error: publishError } = await supabase.rpc("publish_match", { p_match_id: matchId });
+  if (publishError) throw new Error(publishError.message);
+
+  revalidatePath(`/dashboard/organizer/competitions/${competitionId}`);
+}
+
 export async function createFixture(
   competitionId: string,
   homeTeamId: string,
