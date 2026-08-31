@@ -3,6 +3,7 @@ import { requireRole } from "@/lib/auth";
 import { createClient } from "@/lib/supabase/server";
 import AddTeamForm from "./add-team-form";
 import CreateFixtureForm from "./create-fixture-form";
+import AssignOperatorForm from "./assign-operator-form";
 
 export default async function CompetitionDetailPage({
   params,
@@ -50,7 +51,7 @@ export default async function CompetitionDetailPage({
   const { data: fixtureRows } = await supabase
     .from("matches")
     .select(
-      "id, scheduled_at, status, home:teams!home_team_id(name), away:teams!away_team_id(name)"
+      "id, scheduled_at, status, assigned_operator_profile_id, home:teams!home_team_id(name), away:teams!away_team_id(name), operator:profiles!assigned_operator_profile_id(full_name)"
     )
     .eq("competition_id", competitionId)
     .order("scheduled_at", { ascending: true });
@@ -59,10 +60,17 @@ export default async function CompetitionDetailPage({
     id: string;
     scheduled_at: string | null;
     status: string;
+    assigned_operator_profile_id: string | null;
     home: { name: string } | null;
     away: { name: string } | null;
+    operator: { full_name: string } | null;
   };
   const fixtures = (fixtureRows ?? []) as unknown as FixtureRow[];
+
+  const { data: operators } = await supabase
+    .from("profiles")
+    .select("id, full_name")
+    .eq("role", "match_operator");
 
   return (
     <div>
@@ -130,6 +138,19 @@ export default async function CompetitionDetailPage({
                   {f.scheduled_at ? new Date(f.scheduled_at).toLocaleString() : "TBD"} ·
                   Status: {f.status}
                 </p>
+                <div className="mt-2">
+                  {f.operator ? (
+                    <p className="text-xs text-zinc-500">
+                      Operator: {f.operator.full_name}
+                    </p>
+                  ) : (
+                    <AssignOperatorForm
+                      competitionId={competitionId}
+                      matchId={f.id}
+                      operators={operators ?? []}
+                    />
+                  )}
+                </div>
               </li>
             ))}
           </ul>

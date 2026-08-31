@@ -12,6 +12,7 @@ export default function RegisterPage() {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [role, setRole] = useState<UserRole>("player");
+  const [whatsappNumber, setWhatsappNumber] = useState("");
   const [error, setError] = useState<string | null>(null);
   const [checkEmail, setCheckEmail] = useState(false);
   const [submitting, setSubmitting] = useState(false);
@@ -26,7 +27,11 @@ export default function RegisterPage() {
       email,
       password,
       options: {
-        data: { role, full_name: fullName },
+        data: {
+          role,
+          full_name: fullName,
+          whatsapp_number: role === "match_operator" ? whatsappNumber : null,
+        },
         emailRedirectTo: `${window.location.origin}/auth/callback`,
       },
     });
@@ -108,6 +113,19 @@ export default function RegisterPage() {
             ))}
           </select>
         </label>
+        {role === "match_operator" && (
+          <label className="flex flex-col gap-1 text-sm">
+            WhatsApp number (with country code, e.g. +2348012345678)
+            <input
+              required
+              type="tel"
+              value={whatsappNumber}
+              onChange={(e) => setWhatsappNumber(e.target.value)}
+              placeholder="+2348012345678"
+              className="rounded border border-zinc-300 px-3 py-2 dark:border-zinc-700 dark:bg-zinc-900"
+            />
+          </label>
+        )}
         {error && <p className="text-sm text-red-600">{error}</p>}
         <button
           type="submit"
