@@ -1,3 +1,4 @@
+import Link from "next/link";
 import { requireRole } from "@/lib/auth";
 import { createClient } from "@/lib/supabase/server";
 import OnboardingForm from "./onboarding-form";
@@ -62,10 +63,13 @@ export default async function OrganizerDashboard() {
                 className="flex items-center justify-between rounded border border-zinc-200 p-3 dark:border-zinc-800"
               >
                 <div>
-                  <p className="font-medium">
+                  <Link
+                    href={`/dashboard/organizer/competitions/${c.id}`}
+                    className="font-medium underline"
+                  >
                     {c.name}
                     {c.season ? ` (${c.season})` : ""}
-                  </p>
+                  </Link>
                   <p className="text-sm text-zinc-600 dark:text-zinc-400">
                     Status: {c.status}
                   </p>
