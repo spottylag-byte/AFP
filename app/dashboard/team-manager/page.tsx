@@ -51,6 +51,16 @@ export default async function TeamManagerDashboard() {
       <p className="mt-2 text-zinc-600 dark:text-zinc-400">
         {team.name} · {fullName}
       </p>
+      <p className="mt-1 text-sm">
+        <a
+          href={`/teams/${team.id}`}
+          target="_blank"
+          rel="noopener noreferrer"
+          className="underline"
+        >
+          View public page
+        </a>
+      </p>
 
       <div className="mt-8 max-w-md">
         <h2 className="text-sm font-medium text-zinc-500">Add a player</h2>

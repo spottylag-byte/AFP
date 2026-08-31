@@ -7,7 +7,7 @@ export default function Home() {
         African Football Platform
       </h1>
       <p className="max-w-md text-zinc-600 dark:text-zinc-400">
-        Phase 1 — Auth + Roles.
+        Grassroots football competitions, verified statistics.
       </p>
       <div className="flex gap-4 text-sm font-medium">
         <Link href="/login" className="underline">

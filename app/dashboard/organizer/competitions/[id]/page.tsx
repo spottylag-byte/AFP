@@ -190,6 +190,18 @@ export default async function CompetitionDetailPage({
       <p className="mt-1 text-sm text-zinc-600 dark:text-zinc-400">
         Status: {competition.status}
       </p>
+      {competition.status === "published" && (
+        <p className="mt-1 text-sm">
+          <a
+            href={`/competitions/${competitionId}`}
+            target="_blank"
+            rel="noopener noreferrer"
+            className="underline"
+          >
+            View public page
+          </a>
+        </p>
+      )}
 
       <div className="mt-8">
         <h2 className="text-sm font-medium text-zinc-500">Add a team</h2>
