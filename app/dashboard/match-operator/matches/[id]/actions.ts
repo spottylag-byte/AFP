@@ -29,7 +29,8 @@ export async function recordEvent(
   matchId: string,
   playerId: string,
   eventType: string,
-  minute: number | null
+  minute: number | null,
+  dedupKey: string
 ) {
   const supabase = await createClient();
   const { error } = await supabase.rpc("record_match_event", {
@@ -37,6 +38,7 @@ export async function recordEvent(
     p_player_id: playerId,
     p_event_type: eventType,
     p_minute: minute,
+    p_dedup_key: dedupKey,
   });
 
   if (error) throw new Error(error.message);

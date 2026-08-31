@@ -5,6 +5,8 @@ import AddTeamForm from "./add-team-form";
 import CreateFixtureForm from "./create-fixture-form";
 import AssignOperatorForm from "./assign-operator-form";
 import VerifyPublishButton from "./verify-publish-button";
+import FlagDisputeButton from "./flag-dispute-button";
+import CorrectionsQueue, { type PendingCorrection } from "./corrections-queue";
 
 export default async function CompetitionDetailPage({
   params,
@@ -74,6 +76,82 @@ export default async function CompetitionDetailPage({
     .from("profiles")
     .select("id, full_name")
     .eq("role", "match_operator");
+
+  const fixtureIds = fixtures.map((f) => f.id);
+
+  const { data: eventRows } = await supabase
+    .from("match_events")
+    .select("id, match_id, event_type, minute, compensates_event_id, players(full_name)")
+    .in("match_id", fixtureIds.length > 0 ? fixtureIds : ["00000000-0000-0000-0000-000000000000"])
+    .order("created_at", { ascending: true });
+
+  type EventRow = {
+    id: string;
+    match_id: string;
+    event_type: string;
+    minute: number | null;
+    compensates_event_id: string | null;
+    players: { full_name: string } | null;
+  };
+  const eventsByMatch = new Map<string, EventRow[]>();
+  for (const e of (eventRows ?? []) as unknown as EventRow[]) {
+    const list = eventsByMatch.get(e.match_id) ?? [];
+    list.push(e);
+    eventsByMatch.set(e.match_id, list);
+  }
+
+  const { data: pendingRows } = await supabase
+    .from("correction_requests")
+    .select(
+      "id, reason, evidence_url, requester:profiles!requested_by(full_name), match_events(event_type, minute, match_id, players(full_name))"
+    )
+    .eq("status", "pending");
+
+  type PendingRow = {
+    id: string;
+    reason: string;
+    evidence_url: string | null;
+    requester: { full_name: string } | null;
+    match_events: {
+      event_type: string;
+      minute: number | null;
+      match_id: string;
+      players: { full_name: string } | null;
+    } | null;
+  };
+  const fixtureIdSet = new Set(fixtureIds);
+  const pendingForThisCompetition = ((pendingRows ?? []) as unknown as PendingRow[]).filter(
+    (p) => p.match_events && fixtureIdSet.has(p.match_events.match_id)
+  );
+
+  const relevantMatchIds = Array.from(
+    new Set(pendingForThisCompetition.map((p) => p.match_events!.match_id))
+  );
+
+  const { data: lineupRows } = await supabase
+    .from("match_lineups")
+    .select("match_id, player_id, players(full_name)")
+    .in("match_id", relevantMatchIds.length > 0 ? relevantMatchIds : ["00000000-0000-0000-0000-000000000000"]);
+
+  type LineupRow = { match_id: string; player_id: string; players: { full_name: string } | null };
+  const lineupsByMatch = new Map<string, { id: string; full_name: string }[]>();
+  for (const l of (lineupRows ?? []) as unknown as LineupRow[]) {
+    if (!l.players) continue;
+    const list = lineupsByMatch.get(l.match_id) ?? [];
+    list.push({ id: l.player_id, full_name: l.players.full_name });
+    lineupsByMatch.set(l.match_id, list);
+  }
+
+  const pendingCorrections: PendingCorrection[] = pendingForThisCompetition.map((p) => ({
+    id: p.id,
+    reason: p.reason,
+    evidence_url: p.evidence_url,
+    requested_by_name: p.requester?.full_name ?? "Unknown",
+    original_event_type: p.match_events!.event_type,
+    original_player_name: p.match_events!.players?.full_name ?? null,
+    original_minute: p.match_events!.minute,
+    lineup_players: lineupsByMatch.get(p.match_events!.match_id) ?? [],
+  }));
 
   const { data: standingsRows } = await supabase
     .from("team_statistics")
@@ -189,10 +267,43 @@ export default async function CompetitionDetailPage({
                     <VerifyPublishButton competitionId={competitionId} matchId={f.id} />
                   )}
                 </div>
+                {["finished", "verified", "published"].includes(f.status) && (
+                  <div className="mt-3 border-t border-zinc-200 pt-2 dark:border-zinc-800">
+                    <p className="text-xs font-medium text-zinc-500">Events</p>
+                    {(eventsByMatch.get(f.id) ?? []).length === 0 ? (
+                      <p className="text-xs text-zinc-500">None recorded.</p>
+                    ) : (
+                      <ul className="mt-1 flex flex-col gap-1">
+                        {(eventsByMatch.get(f.id) ?? []).map((e) => (
+                          <li key={e.id} className="text-xs">
+                            {e.event_type.replace("_", " ")}
+                            {e.players ? ` · ${e.players.full_name}` : ""}
+                            {e.minute !== null ? ` (${e.minute}')` : ""}
+                            {e.compensates_event_id && (
+                              <span className="text-zinc-400"> (correction)</span>
+                            )}
+                            <span className="ml-2">
+                              <FlagDisputeButton competitionId={competitionId} eventId={e.id} />
+                            </span>
+                          </li>
+                        ))}
+                      </ul>
+                    )}
+                  </div>
+                )}
               </li>
             ))}
           </ul>
         )}
+      </div>
+
+      <div className="mt-8">
+        <h2 className="text-sm font-medium text-zinc-500">
+          Pending corrections ({pendingCorrections.length})
+        </h2>
+        <div className="mt-2">
+          <CorrectionsQueue competitionId={competitionId} corrections={pendingCorrections} />
+        </div>
       </div>
 
       <div className="mt-8">

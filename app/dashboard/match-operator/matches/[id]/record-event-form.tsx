@@ -34,9 +34,13 @@ export default function RecordEventForm({
   function handleSubmit(e: React.FormEvent) {
     e.preventDefault();
     setError(null);
+    // Generated once per submit attempt so a network-level retry of this
+    // same request reuses it -- record_match_event() then treats a
+    // resubmission as a no-op instead of a second event.
+    const dedupKey = crypto.randomUUID();
     startTransition(async () => {
       try {
-        await recordEvent(matchId, playerId, eventType, minute ? Number(minute) : null);
+        await recordEvent(matchId, playerId, eventType, minute ? Number(minute) : null, dedupKey);
         setMinute("");
       } catch (err) {
         setError(err instanceof Error ? err.message : "Something went wrong");

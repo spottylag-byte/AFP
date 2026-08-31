@@ -43,6 +43,55 @@ export async function verifyAndPublishMatch(competitionId: string, matchId: stri
   revalidatePath(`/dashboard/organizer/competitions/${competitionId}`);
 }
 
+export async function flagDispute(competitionId: string, eventId: string, reason: string) {
+  const supabase = await createClient();
+  const { error } = await supabase.rpc("flag_event_dispute", {
+    p_event_id: eventId,
+    p_reason: reason,
+  });
+
+  if (error) throw new Error(error.message);
+
+  revalidatePath(`/dashboard/organizer/competitions/${competitionId}`);
+}
+
+export async function approveCorrection(
+  competitionId: string,
+  correctionRequestId: string,
+  correctedEventType: string | null,
+  correctedPlayerId: string | null,
+  reviewNotes: string
+) {
+  const supabase = await createClient();
+  const { error } = await supabase.rpc("approve_correction", {
+    p_correction_request_id: correctionRequestId,
+    p_corrected_event_type: correctedEventType,
+    p_corrected_player_id: correctedPlayerId,
+    p_corrected_minute: null,
+    p_review_notes: reviewNotes || null,
+  });
+
+  if (error) throw new Error(error.message);
+
+  revalidatePath(`/dashboard/organizer/competitions/${competitionId}`);
+}
+
+export async function rejectCorrection(
+  competitionId: string,
+  correctionRequestId: string,
+  reviewNotes: string
+) {
+  const supabase = await createClient();
+  const { error } = await supabase.rpc("reject_correction", {
+    p_correction_request_id: correctionRequestId,
+    p_review_notes: reviewNotes,
+  });
+
+  if (error) throw new Error(error.message);
+
+  revalidatePath(`/dashboard/organizer/competitions/${competitionId}`);
+}
+
 export async function createFixture(
   competitionId: string,
   homeTeamId: string,

@@ -79,7 +79,7 @@ export async function POST(request: Request) {
       p_player_identifier: parsed.playerCode,
       p_event_type: parsed.eventType,
       p_minute: parsed.minute,
-      p_provider_message_id: messageSid || null,
+      p_dedup_key: messageSid || null,
     })
     .single();
 
