@@ -15,6 +15,18 @@ export async function addTeamToCompetition(competitionId: string, teamId: string
   revalidatePath(`/dashboard/organizer/competitions/${competitionId}`);
 }
 
+export async function createTeamAsOrganizer(competitionId: string, name: string) {
+  const supabase = await createClient();
+  const { error } = await supabase.rpc("create_team_as_organizer", {
+    p_name: name,
+    p_competition_id: competitionId,
+  });
+
+  if (error) throw new Error(error.message);
+
+  revalidatePath(`/dashboard/organizer/competitions/${competitionId}`);
+}
+
 export async function assignMatchOperator(
   competitionId: string,
   matchId: string,

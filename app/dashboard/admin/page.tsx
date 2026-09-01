@@ -86,6 +86,12 @@ export default async function AdminDashboard() {
         >
           Manage users
         </Link>
+        <Link
+          href="/dashboard/admin/teams"
+          className="rounded border border-zinc-300 px-4 py-2 dark:border-zinc-700"
+        >
+          Browse teams & rosters
+        </Link>
       </div>
 
       <div className="mt-8 grid grid-cols-2 gap-3 sm:grid-cols-3 lg:grid-cols-6">

@@ -1,7 +1,9 @@
 import { notFound } from "next/navigation";
 import { requireRole } from "@/lib/auth";
 import { createClient } from "@/lib/supabase/server";
+import Link from "next/link";
 import AddTeamForm from "./add-team-form";
+import CreateTeamForm from "./create-team-form";
 import CreateFixtureForm from "./create-fixture-form";
 import AssignOperatorForm from "./assign-operator-form";
 import VerifyPublishButton from "./verify-publish-button";
@@ -35,13 +37,18 @@ export default async function CompetitionDetailPage({
 
   const { data: enteredTeamRows } = await supabase
     .from("competition_teams")
-    .select("team_id, teams(id, name)")
+    .select("team_id, teams(id, name, team_manager_profile_id)")
     .eq("competition_id", competitionId);
 
-  type EnteredTeamRow = { team_id: string; teams: { id: string; name: string } | null };
+  type EnteredTeamRow = {
+    team_id: string;
+    teams: { id: string; name: string; team_manager_profile_id: string } | null;
+  };
   const enteredTeams = ((enteredTeamRows ?? []) as unknown as EnteredTeamRow[])
     .map((r) => r.teams)
-    .filter((t): t is { id: string; name: string } => t !== null);
+    .filter(
+      (t): t is { id: string; name: string; team_manager_profile_id: string } => t !== null
+    );
 
   const { data: allTeams } = await supabase
     .from("teams")
@@ -208,9 +215,22 @@ export default async function CompetitionDetailPage({
       )}
 
       <div className="mt-8">
-        <h2 className="text-sm font-medium text-zinc-500">Add a team</h2>
+        <h2 className="text-sm font-medium text-zinc-500">Add an existing team</h2>
         <div className="mt-2">
           <AddTeamForm competitionId={competitionId} availableTeams={availableTeams} />
+        </div>
+      </div>
+
+      <div className="mt-6">
+        <h2 className="text-sm font-medium text-zinc-500">
+          Onboard a new team
+        </h2>
+        <p className="mt-1 text-sm text-zinc-600 dark:text-zinc-400">
+          For a team that&apos;s new to the platform. You&apos;ll become its manager-of-record
+          and can build its roster from the roster page afterwards.
+        </p>
+        <div className="mt-2">
+          <CreateTeamForm competitionId={competitionId} />
         </div>
       </div>
 
@@ -225,9 +245,17 @@ export default async function CompetitionDetailPage({
             {enteredTeams.map((t) => (
               <li
                 key={t.id}
-                className="rounded border border-zinc-200 px-3 py-1 text-sm dark:border-zinc-800"
+                className="flex items-center gap-2 rounded border border-zinc-200 px-3 py-1 text-sm dark:border-zinc-800"
               >
                 {t.name}
+                {t.team_manager_profile_id === user.id && (
+                  <Link
+                    href={`/dashboard/organizer/teams/${t.id}`}
+                    className="text-xs underline text-zinc-500"
+                  >
+                    Manage roster
+                  </Link>
+                )}
               </li>
             ))}
           </ul>

@@ -3,10 +3,11 @@ import { requireRole } from "@/lib/auth";
 import { createClient } from "@/lib/supabase/server";
 import { createServiceClient } from "@/lib/supabase/service";
 import RoleChangeForm from "./role-change-form";
+import DeactivateButton from "./deactivate-button";
 import type { UserRole } from "@/lib/roles";
 
 export default async function AdminUsersPage() {
-  await requireRole("platform_admin");
+  const { user } = await requireRole("platform_admin");
 
   // Email lives only in auth.users, never denormalized into profiles --
   // this is the one admin-only view that needs the service-role client
@@ -30,10 +31,17 @@ export default async function AdminUsersPage() {
   };
 
   const emailById = new Map((authUsers?.users ?? []).map((u) => [u.id, u.email ?? "—"]));
+  const bannedById = new Map(
+    (authUsers?.users ?? []).map((u) => [
+      u.id,
+      Boolean(u.banned_until && new Date(u.banned_until) > new Date()),
+    ])
+  );
 
   const rows = ((profiles ?? []) as Profile[]).map((p) => ({
     ...p,
     email: emailById.get(p.id) ?? "—",
+    deactivated: bannedById.get(p.id) ?? false,
   }));
 
   return (
@@ -57,6 +65,7 @@ export default async function AdminUsersPage() {
               <th className="pr-4 pb-2 font-medium">Email</th>
               <th className="pr-4 pb-2 font-medium">Role</th>
               <th className="pr-4 pb-2 font-medium">Joined</th>
+              <th className="pr-4 pb-2 font-medium">Access</th>
             </tr>
           </thead>
           <tbody>
@@ -64,6 +73,11 @@ export default async function AdminUsersPage() {
               <tr key={r.id} className="border-t border-zinc-200 dark:border-zinc-800">
                 <td className="py-2 pr-4">
                   {r.first_name} {r.last_name}
+                  {r.deactivated && (
+                    <span className="ml-2 rounded bg-red-100 px-1.5 py-0.5 text-xs text-red-700 dark:bg-red-950 dark:text-red-500">
+                      Deactivated
+                    </span>
+                  )}
                 </td>
                 <td className="py-2 pr-4">{r.email}</td>
                 <td className="py-2 pr-4">
@@ -71,6 +85,11 @@ export default async function AdminUsersPage() {
                 </td>
                 <td className="py-2 pr-4 text-zinc-500">
                   {new Date(r.created_at).toLocaleDateString()}
+                </td>
+                <td className="py-2 pr-4">
+                  {r.id !== user.id && (
+                    <DeactivateButton profileId={r.id} deactivated={r.deactivated} />
+                  )}
                 </td>
               </tr>
             ))}
