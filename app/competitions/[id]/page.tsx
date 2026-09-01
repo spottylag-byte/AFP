@@ -2,6 +2,7 @@ import Link from "next/link";
 import { notFound } from "next/navigation";
 import { createClient } from "@/lib/supabase/server";
 import WhatsAppShareLink from "@/components/whatsapp-share-link";
+import Badge from "@/components/badge";
 
 export default async function PublicCompetitionPage({
   params,
@@ -188,17 +189,14 @@ export default async function PublicCompetitionPage({
                     : " vs "}
                   {f.away?.name}
                 </p>
-                <p className="text-zinc-600 dark:text-zinc-400">
+                <p className="mt-1 flex items-center gap-2 text-zinc-600 dark:text-zinc-400">
                   {f.scheduled_at ? new Date(f.scheduled_at).toLocaleString() : "TBD"}
-                  {" · "}
                   {f.status === "published" ? (
-                    <span className="text-green-700 dark:text-green-500">Verified</span>
+                    <Badge kind="verified">Verified</Badge>
                   ) : f.status === "finished" || f.status === "verified" ? (
-                    <span className="text-amber-700 dark:text-amber-500">
-                      Pending verification
-                    </span>
+                    <Badge kind="pending">Pending verification</Badge>
                   ) : (
-                    <span>Upcoming</span>
+                    <Badge kind="unverified">Upcoming</Badge>
                   )}
                 </p>
               </li>

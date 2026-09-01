@@ -4,6 +4,7 @@ import { createClient } from "@/lib/supabase/server";
 import LineupForm from "./lineup-form";
 import RecordEventForm from "./record-event-form";
 import { StartMatchButton, FinishMatchButton } from "./match-controls";
+import Badge from "@/components/badge";
 
 export default async function MatchCenterPage({
   params,
@@ -111,11 +112,17 @@ export default async function MatchCenterPage({
       <h1 className="text-xl font-semibold">
         {matchDetail.home?.name} vs {matchDetail.away?.name}
       </h1>
-      <p className="mt-1 text-sm text-zinc-600 dark:text-zinc-400">
+      <p className="mt-1 flex flex-wrap items-center gap-2 text-sm text-zinc-600 dark:text-zinc-400">
         {matchDetail.scheduled_at
           ? new Date(matchDetail.scheduled_at).toLocaleString()
-          : "TBD"}{" "}
-        · Status: {matchDetail.status}
+          : "TBD"}
+        {matchDetail.status === "finished" ? (
+          <Badge kind="verified">Finished</Badge>
+        ) : matchDetail.status === "in_progress" ? (
+          <Badge kind="pending">Live</Badge>
+        ) : (
+          <Badge kind="unverified">Scheduled</Badge>
+        )}
       </p>
 
       {matchDetail.status === "scheduled" && (

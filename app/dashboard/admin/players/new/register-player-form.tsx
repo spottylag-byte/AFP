@@ -141,7 +141,7 @@ export default function RegisterPlayerForm() {
           <button
             onClick={handleRegister}
             disabled={submitting}
-            className="rounded bg-black px-4 py-2 text-sm text-white disabled:opacity-50 dark:bg-white dark:text-black"
+            className="rounded bg-primary hover:bg-primary-hover px-4 py-2 text-sm text-white disabled:opacity-50 dark:bg-primary dark:hover:bg-primary-hover"
           >
             {submitting
               ? "Registering..."
@@ -208,7 +208,7 @@ export default function RegisterPlayerForm() {
       <button
         type="submit"
         disabled={submitting}
-        className="rounded bg-black px-4 py-2 text-sm text-white disabled:opacity-50 dark:bg-white dark:text-black"
+        className="rounded bg-primary hover:bg-primary-hover px-4 py-2 text-sm text-white disabled:opacity-50 dark:bg-primary dark:hover:bg-primary-hover"
       >
         {submitting ? "Checking..." : "Check for duplicates"}
       </button>

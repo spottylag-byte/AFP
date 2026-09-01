@@ -25,13 +25,19 @@ export default async function DashboardLayout({
   return (
     <div className="min-h-screen">
       <header className="flex items-center justify-between border-b border-zinc-200 px-6 py-4 dark:border-zinc-800">
-        <div>
-          <p className="font-semibold">African Football Platform</p>
-          {profile && (
-            <p className="text-sm text-zinc-600 dark:text-zinc-400">
-              {profile.full_name} · {profile.role.replace("_", " ")}
-            </p>
-          )}
+        <div className="flex items-center gap-3">
+          <div className="flex h-9 w-9 items-center justify-center rounded-full bg-primary text-sm font-bold text-white">
+            AF
+          </div>
+          <div>
+            <p className="font-semibold">African Football Platform</p>
+            {profile && (
+              <p className="text-sm text-zinc-600 dark:text-zinc-400">
+                {profile.full_name} ·{" "}
+                <span className="text-accent">{profile.role.replace("_", " ")}</span>
+              </p>
+            )}
+          </div>
         </div>
         <SignOutButton />
       </header>

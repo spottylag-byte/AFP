@@ -13,12 +13,32 @@ export type UserRole =
 // operator needs an account to be assigned in the first place, and
 // building a full invite/promotion system just for that would be
 // disproportionate for a lightweight volunteer role.
-export const SELF_REGISTERABLE_ROLES: { value: UserRole; label: string }[] = [
-  { value: "organizer", label: "Organizer" },
-  { value: "team_manager", label: "Team Manager" },
-  { value: "player", label: "Player" },
-  { value: "scout", label: "Scout" },
-  { value: "match_operator", label: "Match Operator" },
+export const SELF_REGISTERABLE_ROLES: { value: UserRole; label: string; description: string }[] = [
+  {
+    value: "organizer",
+    label: "Organizer",
+    description: "Create and run a competition — teams, fixtures, results, payments.",
+  },
+  {
+    value: "team_manager",
+    label: "Team Manager",
+    description: "Register your team's squad and keep its roster up to date.",
+  },
+  {
+    value: "player",
+    label: "Player",
+    description: "Get a permanent Football ID and a public profile with verified stats.",
+  },
+  {
+    value: "scout",
+    label: "Scout",
+    description: "Search verified player and team statistics across competitions.",
+  },
+  {
+    value: "match_operator",
+    label: "Match Operator",
+    description: "Record live match events for fixtures an organizer assigns to you.",
+  },
 ];
 
 export const DASHBOARD_PATH_BY_ROLE: Record<UserRole, string> = {

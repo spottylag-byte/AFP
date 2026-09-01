@@ -29,7 +29,7 @@ export default function VerifyPublishButton({
       <button
         onClick={handleClick}
         disabled={isPending}
-        className="rounded bg-black px-3 py-1.5 text-xs text-white disabled:opacity-50 dark:bg-white dark:text-black"
+        className="rounded bg-primary hover:bg-primary-hover px-3 py-1.5 text-xs text-white disabled:opacity-50 dark:bg-primary dark:hover:bg-primary-hover"
       >
         {isPending ? "Publishing..." : "Verify & publish"}
       </button>

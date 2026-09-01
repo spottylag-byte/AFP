@@ -62,7 +62,7 @@ export default function RoleChangeForm({
         <button
           onClick={handleConfirm}
           disabled={isPending}
-          className="rounded bg-black px-2 py-1 text-xs text-white disabled:opacity-50 dark:bg-white dark:text-black"
+          className="rounded bg-primary hover:bg-primary-hover px-2 py-1 text-xs text-white disabled:opacity-50 dark:bg-primary dark:hover:bg-primary-hover"
         >
           {isPending ? "Saving..." : "Confirm"}
         </button>

@@ -93,7 +93,7 @@ function CorrectionItem({
         <div className="mt-2 flex gap-3">
           <button
             onClick={() => setAction("approve")}
-            className="rounded bg-black px-3 py-1 text-xs text-white dark:bg-white dark:text-black"
+            className="rounded bg-primary hover:bg-primary-hover px-3 py-1 text-xs text-white dark:bg-primary dark:hover:bg-primary-hover"
           >
             Approve
           </button>
@@ -150,7 +150,7 @@ function CorrectionItem({
             <button
               type="submit"
               disabled={isPending}
-              className="rounded bg-black px-3 py-1 text-xs text-white disabled:opacity-50 dark:bg-white dark:text-black"
+              className="rounded bg-primary hover:bg-primary-hover px-3 py-1 text-xs text-white disabled:opacity-50 dark:bg-primary dark:hover:bg-primary-hover"
             >
               {isPending ? "Approving..." : "Confirm approval"}
             </button>
@@ -179,7 +179,7 @@ function CorrectionItem({
             <button
               type="submit"
               disabled={isPending}
-              className="rounded bg-black px-3 py-1 text-xs text-white disabled:opacity-50 dark:bg-white dark:text-black"
+              className="rounded bg-primary hover:bg-primary-hover px-3 py-1 text-xs text-white disabled:opacity-50 dark:bg-primary dark:hover:bg-primary-hover"
             >
               {isPending ? "Rejecting..." : "Confirm rejection"}
             </button>

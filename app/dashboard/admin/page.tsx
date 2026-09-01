@@ -76,7 +76,7 @@ export default async function AdminDashboard() {
       <div className="mt-4 flex gap-4 text-sm">
         <Link
           href="/dashboard/admin/players/new"
-          className="rounded bg-black px-4 py-2 text-white dark:bg-white dark:text-black"
+          className="rounded bg-primary hover:bg-primary-hover px-4 py-2 text-white dark:bg-primary dark:hover:bg-primary-hover"
         >
           Register a player
         </Link>
@@ -95,7 +95,7 @@ export default async function AdminDashboard() {
       </div>
 
       <div className="mt-8 grid grid-cols-2 gap-3 sm:grid-cols-3 lg:grid-cols-6">
-        <div className="rounded border border-zinc-200 p-3 dark:border-zinc-800">
+        <div className="rounded-lg border border-zinc-200 bg-white p-3 shadow-sm dark:border-zinc-800 dark:bg-zinc-900/40">
           <p className="text-2xl font-semibold">{totalUsers}</p>
           <p className="text-xs text-zinc-500">
             Users
@@ -108,7 +108,7 @@ export default async function AdminDashboard() {
             )}
           </p>
         </div>
-        <div className="rounded border border-zinc-200 p-3 dark:border-zinc-800">
+        <div className="rounded-lg border border-zinc-200 bg-white p-3 shadow-sm dark:border-zinc-800 dark:bg-zinc-900/40">
           <p className="text-2xl font-semibold">{(competitionStatuses ?? []).length}</p>
           <p className="text-xs text-zinc-500">
             Competitions
@@ -118,22 +118,22 @@ export default async function AdminDashboard() {
             </span>
           </p>
         </div>
-        <div className="rounded border border-zinc-200 p-3 dark:border-zinc-800">
+        <div className="rounded-lg border border-zinc-200 bg-white p-3 shadow-sm dark:border-zinc-800 dark:bg-zinc-900/40">
           <p className="text-2xl font-semibold">{teamsCount ?? 0}</p>
           <p className="text-xs text-zinc-500">Teams</p>
         </div>
-        <div className="rounded border border-zinc-200 p-3 dark:border-zinc-800">
+        <div className="rounded-lg border border-zinc-200 bg-white p-3 shadow-sm dark:border-zinc-800 dark:bg-zinc-900/40">
           <p className="text-2xl font-semibold">{playersCount ?? 0}</p>
           <p className="text-xs text-zinc-500">Players</p>
         </div>
-        <div className="rounded border border-zinc-200 p-3 dark:border-zinc-800">
+        <div className="rounded-lg border border-zinc-200 bg-white p-3 shadow-sm dark:border-zinc-800 dark:bg-zinc-900/40">
           <p className="text-2xl font-semibold">{(matchStatuses ?? []).length}</p>
           <p className="text-xs text-zinc-500">
             Matches
             <span className="block">published: {matchesByStatus.published ?? 0}</span>
           </p>
         </div>
-        <div className="rounded border border-zinc-200 p-3 dark:border-zinc-800">
+        <div className="rounded-lg border border-zinc-200 bg-white p-3 shadow-sm dark:border-zinc-800 dark:bg-zinc-900/40">
           <p className="text-2xl font-semibold">₦{totalRevenue.toLocaleString()}</p>
           <p className="text-xs text-zinc-500">Revenue (completed)</p>
         </div>

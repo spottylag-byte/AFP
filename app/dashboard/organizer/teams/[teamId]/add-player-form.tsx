@@ -136,7 +136,7 @@ export default function AddPlayerForm({ teamId }: { teamId: string }) {
                   <button
                     onClick={() => handleAddExisting(c)}
                     disabled={submitting}
-                    className="mt-2 rounded bg-black px-3 py-1 text-xs text-white disabled:opacity-50 dark:bg-white dark:text-black"
+                    className="mt-2 rounded bg-primary hover:bg-primary-hover px-3 py-1 text-xs text-white disabled:opacity-50 dark:bg-primary dark:hover:bg-primary-hover"
                   >
                     This is the same person — add to roster instead
                   </button>
@@ -156,7 +156,7 @@ export default function AddPlayerForm({ teamId }: { teamId: string }) {
           <button
             onClick={handleRegisterNew}
             disabled={submitting}
-            className="rounded bg-black px-4 py-2 text-sm text-white disabled:opacity-50 dark:bg-white dark:text-black"
+            className="rounded bg-primary hover:bg-primary-hover px-4 py-2 text-sm text-white disabled:opacity-50 dark:bg-primary dark:hover:bg-primary-hover"
           >
             {submitting
               ? "Working..."
@@ -223,7 +223,7 @@ export default function AddPlayerForm({ teamId }: { teamId: string }) {
       <button
         type="submit"
         disabled={submitting}
-        className="rounded bg-black px-4 py-2 text-sm text-white disabled:opacity-50 dark:bg-white dark:text-black"
+        className="rounded bg-primary hover:bg-primary-hover px-4 py-2 text-sm text-white disabled:opacity-50 dark:bg-primary dark:hover:bg-primary-hover"
       >
         {submitting ? "Checking..." : "Check for duplicates"}
       </button>

@@ -91,7 +91,7 @@ export default function CreateFixtureForm({
       <button
         type="submit"
         disabled={isPending}
-        className="rounded bg-black px-4 py-2 text-sm text-white disabled:opacity-50 dark:bg-white dark:text-black"
+        className="rounded bg-primary hover:bg-primary-hover px-4 py-2 text-sm text-white disabled:opacity-50 dark:bg-primary dark:hover:bg-primary-hover"
       >
         {isPending ? "Scheduling..." : "Schedule fixture"}
       </button>
