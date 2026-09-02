@@ -1,10 +1,12 @@
 "use client";
 
 import { useState, useTransition } from "react";
+import { useRouter } from "next/navigation";
 import { initiateCompetitionPayment } from "./actions";
 import { COMPETITION_ONBOARDING_FEE_NGN } from "@/lib/competitions";
 
 export default function PayButton({ competitionId }: { competitionId: string }) {
+  const router = useRouter();
   const [error, setError] = useState<string | null>(null);
   const [isPending, startTransition] = useTransition();
 
@@ -14,6 +16,10 @@ export default function PayButton({ competitionId }: { competitionId: string }) 
       const result = await initiateCompetitionPayment(competitionId);
       if ("error" in result) {
         setError(result.error);
+        return;
+      }
+      if ("alreadyPublished" in result) {
+        router.refresh();
         return;
       }
       window.location.href = result.authorizationUrl;

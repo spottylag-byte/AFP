@@ -2,6 +2,7 @@ import { notFound } from "next/navigation";
 import { requireRole } from "@/lib/auth";
 import { createClient } from "@/lib/supabase/server";
 import AddPlayerForm from "./add-player-form";
+import PlayerPhotoUpload from "@/components/player-photo-upload";
 
 export default async function OrganizerTeamRosterPage({
   params,
@@ -25,7 +26,7 @@ export default async function OrganizerTeamRosterPage({
   const { data: roster } = await supabase
     .from("team_players")
     .select(
-      "joined_at, players(full_name, alias, date_of_birth, football_id_id, football_ids(code))"
+      "joined_at, players(id, full_name, alias, date_of_birth, photo_url, football_id_id, football_ids(code))"
     )
     .eq("team_id", team.id)
     .is("left_at", null)
@@ -34,9 +35,11 @@ export default async function OrganizerTeamRosterPage({
   type RosterRow = {
     joined_at: string;
     players: {
+      id: string;
       full_name: string;
       alias: string | null;
       date_of_birth: string;
+      photo_url: string | null;
       football_ids: { code: string } | null;
     } | null;
   };
@@ -79,13 +82,24 @@ export default async function OrganizerTeamRosterPage({
                 key={i}
                 className="rounded border border-zinc-200 p-3 text-sm dark:border-zinc-800"
               >
-                <p className="font-medium">
-                  {r.players?.full_name}
-                  {r.players?.alias ? ` (${r.players.alias})` : ""}
-                </p>
-                <p className="text-zinc-600 dark:text-zinc-400">
-                  Born {r.players?.date_of_birth} · {r.players?.football_ids?.code}
-                </p>
+                <div className="flex items-center justify-between gap-3">
+                  <div>
+                    <p className="font-medium">
+                      {r.players?.full_name}
+                      {r.players?.alias ? ` (${r.players.alias})` : ""}
+                    </p>
+                    <p className="text-zinc-600 dark:text-zinc-400">
+                      Born {r.players?.date_of_birth} · {r.players?.football_ids?.code}
+                    </p>
+                  </div>
+                  {r.players && (
+                    <PlayerPhotoUpload
+                      playerId={r.players.id}
+                      fullName={r.players.full_name}
+                      photoUrl={r.players.photo_url}
+                    />
+                  )}
+                </div>
               </li>
             ))}
           </ul>

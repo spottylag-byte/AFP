@@ -11,17 +11,17 @@ export default function Icon() {
           width: "100%",
           height: "100%",
           borderRadius: "50%",
-          background: "#15803d",
+          background: "#16213a",
           display: "flex",
           alignItems: "center",
           justifyContent: "center",
-          color: "white",
-          fontSize: 15,
+          color: "#D9A441",
+          fontSize: 12,
           fontWeight: 700,
           fontFamily: "sans-serif",
         }}
       >
-        AF
+        AFP
       </div>
     ),
     size

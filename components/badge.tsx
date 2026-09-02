@@ -1,7 +1,7 @@
 const STYLES = {
-  verified: "bg-primary/10 text-primary dark:bg-primary/20",
-  pending: "bg-accent/10 text-accent dark:bg-accent/20",
-  unverified: "bg-zinc-500/10 text-zinc-600 dark:text-zinc-400",
+  verified: "bg-pitch text-chalk",
+  pending: "bg-accent text-ink",
+  unverified: "bg-zinc-500/15 text-zinc-600 dark:bg-white/10 dark:text-zinc-300",
 } as const;
 
 export default function Badge({

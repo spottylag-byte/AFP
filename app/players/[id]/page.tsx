@@ -2,6 +2,7 @@ import Link from "next/link";
 import { notFound } from "next/navigation";
 import { createClient } from "@/lib/supabase/server";
 import WhatsAppShareLink from "@/components/whatsapp-share-link";
+import PlayerAvatar from "@/components/player-avatar";
 
 export default async function PublicPlayerPage({
   params,
@@ -14,7 +15,7 @@ export default async function PublicPlayerPage({
   // Deliberately does not select date_of_birth -- never shown publicly.
   const { data: player } = await supabase
     .from("players")
-    .select("id, full_name, alias, football_ids(code)")
+    .select("id, full_name, alias, photo_url, football_ids(code)")
     .eq("id", playerId)
     .is("deleted_at", null)
     .single();
@@ -23,6 +24,7 @@ export default async function PublicPlayerPage({
     id: string;
     full_name: string;
     alias: string | null;
+    photo_url: string | null;
     football_ids: { code: string } | null;
   };
   const p = player as unknown as Player | null;
@@ -62,10 +64,13 @@ export default async function PublicPlayerPage({
           African Football Platform
         </Link>
       </p>
-      <h1 className="mt-2 text-2xl font-semibold">
-        {p.full_name}
-        {p.alias ? <span className="text-zinc-500"> &quot;{p.alias}&quot;</span> : ""}
-      </h1>
+      <div className="mt-2 flex items-center gap-3">
+        <PlayerAvatar fullName={p.full_name} photoUrl={p.photo_url} size={56} />
+        <h1 className="text-2xl font-semibold">
+          {p.full_name}
+          {p.alias ? <span className="text-zinc-500"> &quot;{p.alias}&quot;</span> : ""}
+        </h1>
+      </div>
       <p className="mt-1 text-sm font-mono text-zinc-600 dark:text-zinc-400">
         {p.football_ids?.code}
       </p>

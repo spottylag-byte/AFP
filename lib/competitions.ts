@@ -3,3 +3,6 @@
 // waive_competition_payment() SQL functions -- update both places if
 // this changes.
 export const COMPETITION_ONBOARDING_FEE_NGN = 5000;
+
+// Mirrors the `v_fee` constant in initiate_organizer_subscription().
+export const PREMIUM_MONTHLY_FEE_NGN = 15000;

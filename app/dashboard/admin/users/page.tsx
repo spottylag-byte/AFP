@@ -4,6 +4,7 @@ import { createClient } from "@/lib/supabase/server";
 import { createServiceClient } from "@/lib/supabase/service";
 import RoleChangeForm from "./role-change-form";
 import DeactivateButton from "./deactivate-button";
+import GrantPremiumButton from "./grant-premium-button";
 import type { UserRole } from "@/lib/roles";
 
 export default async function AdminUsersPage() {
@@ -30,6 +31,20 @@ export default async function AdminUsersPage() {
     created_at: string;
   };
 
+  const { data: organizerRows } = await supabase
+    .from("organizers")
+    .select("id, profile_id, tier, premium_until");
+
+  type OrganizerRow = {
+    id: string;
+    profile_id: string;
+    tier: string;
+    premium_until: string | null;
+  };
+  const organizerByProfileId = new Map(
+    ((organizerRows ?? []) as OrganizerRow[]).map((o) => [o.profile_id, o])
+  );
+
   const emailById = new Map((authUsers?.users ?? []).map((u) => [u.id, u.email ?? "—"]));
   const bannedById = new Map(
     (authUsers?.users ?? []).map((u) => [
@@ -38,11 +53,21 @@ export default async function AdminUsersPage() {
     ])
   );
 
-  const rows = ((profiles ?? []) as Profile[]).map((p) => ({
-    ...p,
-    email: emailById.get(p.id) ?? "—",
-    deactivated: bannedById.get(p.id) ?? false,
-  }));
+  const rows = ((profiles ?? []) as Profile[]).map((p) => {
+    const organizer = organizerByProfileId.get(p.id);
+    const isPremium = Boolean(
+      organizer?.tier === "premium" &&
+        organizer.premium_until &&
+        new Date(organizer.premium_until) > new Date()
+    );
+    return {
+      ...p,
+      email: emailById.get(p.id) ?? "—",
+      deactivated: bannedById.get(p.id) ?? false,
+      organizerId: organizer?.id ?? null,
+      isPremium,
+    };
+  });
 
   return (
     <div>
@@ -87,9 +112,17 @@ export default async function AdminUsersPage() {
                   {new Date(r.created_at).toLocaleDateString()}
                 </td>
                 <td className="py-2 pr-4">
-                  {r.id !== user.id && (
-                    <DeactivateButton profileId={r.id} deactivated={r.deactivated} />
-                  )}
+                  <div className="flex flex-col items-start gap-1">
+                    {r.id !== user.id && (
+                      <DeactivateButton profileId={r.id} deactivated={r.deactivated} />
+                    )}
+                    {r.organizerId && (
+                      <GrantPremiumButton
+                        organizerId={r.organizerId}
+                        isPremium={r.isPremium}
+                      />
+                    )}
+                  </div>
                 </td>
               </tr>
             ))}

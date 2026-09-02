@@ -17,6 +17,18 @@ export async function changeUserRole(profileId: string, newRole: UserRole) {
   revalidatePath("/dashboard/admin/users");
 }
 
+export async function grantPremium(organizerId: string, months: number) {
+  const supabase = await createClient();
+  const { error } = await supabase.rpc("admin_grant_premium", {
+    p_organizer_id: organizerId,
+    p_months: months,
+  });
+
+  if (error) throw new Error(error.message);
+
+  revalidatePath("/dashboard/admin/users");
+}
+
 // Deactivation, not deletion: a hard-delete fails for any account with real
 // history anyway (audit_logs is immutable and foreign-keys to the actor),
 // and blocking login is the actual founder need here. The auth.admin call

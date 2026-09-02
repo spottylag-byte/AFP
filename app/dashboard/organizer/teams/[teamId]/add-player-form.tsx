@@ -24,6 +24,9 @@ export default function AddPlayerForm({ teamId }: { teamId: string }) {
   const [lastName, setLastName] = useState("");
   const [alias, setAlias] = useState("");
   const [dateOfBirth, setDateOfBirth] = useState("");
+  const [position, setPosition] = useState("");
+  const [heightCm, setHeightCm] = useState("");
+  const [preferredFoot, setPreferredFoot] = useState("");
   const [stage, setStage] = useState<Stage>("form");
   const [candidates, setCandidates] = useState<Candidate[]>([]);
   const [error, setError] = useState<string | null>(null);
@@ -54,7 +57,10 @@ export default function AddPlayerForm({ teamId }: { teamId: string }) {
         lastName,
         dateOfBirth,
         teamId,
-        alias || null
+        alias || null,
+        position || null,
+        heightCm ? Number(heightCm) : null,
+        preferredFoot || null
       );
       setAdded({ footballIdCode: result.football_id_code });
       setStage("added");
@@ -85,6 +91,9 @@ export default function AddPlayerForm({ teamId }: { teamId: string }) {
     setLastName("");
     setAlias("");
     setDateOfBirth("");
+    setPosition("");
+    setHeightCm("");
+    setPreferredFoot("");
     setCandidates([]);
     setAdded(null);
   }
@@ -219,6 +228,47 @@ export default function AddPlayerForm({ teamId }: { teamId: string }) {
           className="rounded border border-zinc-300 px-3 py-2 dark:border-zinc-700 dark:bg-zinc-900"
         />
       </label>
+      <label className="flex flex-col gap-1 text-sm">
+        Position (optional)
+        <select
+          value={position}
+          onChange={(e) => setPosition(e.target.value)}
+          className="rounded border border-zinc-300 px-3 py-2 dark:border-zinc-700 dark:bg-zinc-900"
+        >
+          <option value="">Not specified</option>
+          <option value="GK">Goalkeeper</option>
+          <option value="DEF">Defender</option>
+          <option value="MID">Midfielder</option>
+          <option value="FWD">Forward</option>
+        </select>
+      </label>
+      <div className="flex gap-3">
+        <label className="flex flex-1 flex-col gap-1 text-sm">
+          Height in cm (optional)
+          <input
+            type="number"
+            min={100}
+            max={230}
+            value={heightCm}
+            onChange={(e) => setHeightCm(e.target.value)}
+            placeholder="e.g. 178"
+            className="rounded border border-zinc-300 px-3 py-2 dark:border-zinc-700 dark:bg-zinc-900"
+          />
+        </label>
+        <label className="flex flex-1 flex-col gap-1 text-sm">
+          Preferred foot (optional)
+          <select
+            value={preferredFoot}
+            onChange={(e) => setPreferredFoot(e.target.value)}
+            className="rounded border border-zinc-300 px-3 py-2 dark:border-zinc-700 dark:bg-zinc-900"
+          >
+            <option value="">Not specified</option>
+            <option value="left">Left</option>
+            <option value="right">Right</option>
+            <option value="both">Both</option>
+          </select>
+        </label>
+      </div>
       {error && <p className="text-sm text-red-600">{error}</p>}
       <button
         type="submit"
