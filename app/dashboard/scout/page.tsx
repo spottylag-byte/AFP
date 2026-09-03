@@ -32,6 +32,35 @@ export default async function ScoutDashboard({
   const sp = await searchParams;
   const supabase = await createClient();
 
+  const { data: profile } = await supabase
+    .from("profiles")
+    .select("scout_status")
+    .eq("id", user.id)
+    .single();
+
+  if (profile?.scout_status !== "approved") {
+    return (
+      <div>
+        <h1 className="text-xl font-semibold">Discover</h1>
+        <p className="mt-2 text-zinc-600 dark:text-zinc-400">Welcome, {fullName}.</p>
+        <div className="mt-6 rounded-lg border border-accent/40 bg-accent/10 p-4 text-sm">
+          {profile?.scout_status === "rejected" ? (
+            <p>
+              Your scout account application was not approved. Contact the platform admin
+              if you believe this is a mistake.
+            </p>
+          ) : (
+            <p>
+              Your scout account is pending admin approval. This exists to keep player
+              contact information safe from people posing as scouts — you&apos;ll get
+              access to Discover and shortlists once an admin approves your account.
+            </p>
+          )}
+        </div>
+      </div>
+    );
+  }
+
   let query = supabase
     .from("players")
     .select("id, full_name, alias, position, height_cm, preferred_foot, photo_url, date_of_birth")

@@ -5,6 +5,7 @@ import { createServiceClient } from "@/lib/supabase/service";
 import RoleChangeForm from "./role-change-form";
 import DeactivateButton from "./deactivate-button";
 import GrantPremiumButton from "./grant-premium-button";
+import ScoutStatusButtons from "./scout-status-buttons";
 import type { UserRole } from "@/lib/roles";
 
 export default async function AdminUsersPage() {
@@ -20,7 +21,7 @@ export default async function AdminUsersPage() {
   const supabase = await createClient();
   const { data: profiles } = await supabase
     .from("profiles")
-    .select("id, first_name, last_name, role, created_at")
+    .select("id, first_name, last_name, role, created_at, scout_status")
     .order("created_at", { ascending: false });
 
   type Profile = {
@@ -29,6 +30,7 @@ export default async function AdminUsersPage() {
     last_name: string;
     role: UserRole;
     created_at: string;
+    scout_status: string | null;
   };
 
   const { data: organizerRows } = await supabase
@@ -103,6 +105,11 @@ export default async function AdminUsersPage() {
                       Deactivated
                     </span>
                   )}
+                  {r.role === "scout" && r.scout_status !== "approved" && (
+                    <span className="ml-2 rounded bg-accent/20 px-1.5 py-0.5 text-xs text-accent-hover">
+                      Scout {r.scout_status ?? "pending"}
+                    </span>
+                  )}
                 </td>
                 <td className="py-2 pr-4">{r.email}</td>
                 <td className="py-2 pr-4">
@@ -121,6 +128,9 @@ export default async function AdminUsersPage() {
                         organizerId={r.organizerId}
                         isPremium={r.isPremium}
                       />
+                    )}
+                    {r.role === "scout" && (
+                      <ScoutStatusButtons profileId={r.id} status={r.scout_status} />
                     )}
                   </div>
                 </td>

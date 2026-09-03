@@ -29,6 +29,18 @@ export async function grantPremium(organizerId: string, months: number) {
   revalidatePath("/dashboard/admin/users");
 }
 
+export async function setScoutStatus(profileId: string, status: "approved" | "rejected") {
+  const supabase = await createClient();
+  const { error } = await supabase.rpc("set_scout_status", {
+    p_profile_id: profileId,
+    p_status: status,
+  });
+
+  if (error) throw new Error(error.message);
+
+  revalidatePath("/dashboard/admin/users");
+}
+
 // Deactivation, not deletion: a hard-delete fails for any account with real
 // history anyway (audit_logs is immutable and foreign-keys to the actor),
 // and blocking login is the actual founder need here. The auth.admin call
