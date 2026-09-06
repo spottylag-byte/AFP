@@ -48,6 +48,13 @@ export default async function PublicPlayerPage({
   };
   const stats = (statRows ?? []) as unknown as StatRow[];
 
+  const { data: videoRows } = await supabase
+    .from("player_videos")
+    .select("id, video_url, caption")
+    .eq("player_id", playerId)
+    .order("created_at", { ascending: false });
+  const videos = (videoRows ?? []) as { id: string; video_url: string; caption: string | null }[];
+
   const career = stats.reduce(
     (acc, s) => ({
       goals: acc.goals + s.goals,
@@ -89,6 +96,26 @@ export default async function PublicPlayerPage({
           {career.red_cards} red
         </p>
       </div>
+
+      {videos.length > 0 && (
+        <div className="mt-8">
+          <h2 className="text-sm font-medium text-zinc-500">Videos</h2>
+          <div className="mt-2 flex flex-wrap gap-3">
+            {videos.map((v) => (
+              <div key={v.id}>
+                <video
+                  src={v.video_url}
+                  controls
+                  className="h-40 w-64 rounded bg-black object-cover"
+                />
+                {v.caption && (
+                  <p className="mt-1 max-w-64 text-xs text-zinc-500">{v.caption}</p>
+                )}
+              </div>
+            ))}
+          </div>
+        </div>
+      )}
 
       <div className="mt-8">
         <h2 className="text-sm font-medium text-zinc-500">By competition</h2>

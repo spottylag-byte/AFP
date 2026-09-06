@@ -3,6 +3,7 @@ import { requireRole } from "@/lib/auth";
 import { createClient } from "@/lib/supabase/server";
 import AddPlayerForm from "./add-player-form";
 import PlayerPhotoUpload from "@/components/player-photo-upload";
+import PlayerVideoManager from "@/components/player-video-manager";
 
 export default async function OrganizerTeamRosterPage({
   params,
@@ -45,6 +46,17 @@ export default async function OrganizerTeamRosterPage({
   };
 
   const rosterRows = (roster ?? []) as unknown as RosterRow[];
+
+  const playerIds = rosterRows.map((r) => r.players?.id).filter((id): id is string => Boolean(id));
+  const { data: videoRows } = playerIds.length
+    ? await supabase.from("player_videos").select("id, player_id, video_url, caption").in("player_id", playerIds)
+    : { data: [] as { id: string; player_id: string; video_url: string; caption: string | null }[] };
+  const videosByPlayer = new Map<string, { id: string; video_url: string; caption: string | null }[]>();
+  for (const v of videoRows ?? []) {
+    const list = videosByPlayer.get(v.player_id) ?? [];
+    list.push({ id: v.id, video_url: v.video_url, caption: v.caption });
+    videosByPlayer.set(v.player_id, list);
+  }
 
   return (
     <div>
@@ -100,6 +112,14 @@ export default async function OrganizerTeamRosterPage({
                     />
                   )}
                 </div>
+                {r.players && (
+                  <div className="mt-2">
+                    <PlayerVideoManager
+                      playerId={r.players.id}
+                      initialVideos={videosByPlayer.get(r.players.id) ?? []}
+                    />
+                  </div>
+                )}
               </li>
             ))}
           </ul>

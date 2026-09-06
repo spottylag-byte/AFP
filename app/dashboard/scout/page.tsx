@@ -90,7 +90,7 @@ export default async function ScoutDashboard({
 
   const playerIds = players.map((p) => p.id);
 
-  const [{ data: statRows }, { data: teamRows }, { data: shortlistRows }] = await Promise.all([
+  const [{ data: statRows }, { data: teamRows }, { data: shortlistRows }, { data: videoRows }] = await Promise.all([
     playerIds.length
       ? supabase
           .from("player_competition_stats")
@@ -108,7 +108,15 @@ export default async function ScoutDashboard({
       .from("shortlist_players")
       .select("player_id, shortlists!inner(scout_profile_id)")
       .eq("shortlists.scout_profile_id", user.id),
+    playerIds.length
+      ? supabase.from("player_videos").select("player_id").in("player_id", playerIds)
+      : Promise.resolve({ data: [] as { player_id: string }[] }),
   ]);
+
+  const videoCountByPlayer = new Map<string, number>();
+  for (const row of videoRows ?? []) {
+    videoCountByPlayer.set(row.player_id, (videoCountByPlayer.get(row.player_id) ?? 0) + 1);
+  }
 
   const statsByPlayer = new Map<string, { goals: number; assists: number; appearances: number }>();
   for (const row of statRows ?? []) {
@@ -136,6 +144,7 @@ export default async function ScoutDashboard({
     appearances: statsByPlayer.get(p.id)?.appearances ?? 0,
     team: teamByPlayer.get(p.id) ?? null,
     shortlisted: shortlistedIds.has(p.id),
+    videoCount: videoCountByPlayer.get(p.id) ?? 0,
   }));
 
   if (sp.verified === "1") {
@@ -302,6 +311,11 @@ export default async function ScoutDashboard({
                       <Badge kind="verified">Verified</Badge>
                     ) : (
                       <Badge kind="unverified">No match record</Badge>
+                    )}
+                    {r.videoCount > 0 && (
+                      <Link href={`/players/${r.id}`} className="text-xs text-zinc-500 underline">
+                        🎥 {r.videoCount}
+                      </Link>
                     )}
                   </div>
                 </li>
