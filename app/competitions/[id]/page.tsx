@@ -80,13 +80,14 @@ export default async function PublicCompetitionPage({
 
   const { data: scorerRows } = await supabase
     .from("player_competition_stats")
-    .select("goals, player_id, players(full_name, alias)")
+    .select("goals, assists, player_id, players(full_name, alias)")
     .eq("competition_id", competitionId)
     .gt("goals", 0)
     .order("goals", { ascending: false });
 
   type ScorerRow = {
     goals: number;
+    assists: number;
     player_id: string;
     players: { full_name: string; alias: string | null } | null;
   };
@@ -218,6 +219,7 @@ export default async function PublicCompetitionPage({
                   {s.players?.alias ? ` (${s.players.alias})` : ""}
                 </Link>{" "}
                 — {s.goals} goal{s.goals === 1 ? "" : "s"}
+                {s.assists > 0 ? `, ${s.assists} assist${s.assists === 1 ? "" : "s"}` : ""}
               </li>
             ))}
           </ul>

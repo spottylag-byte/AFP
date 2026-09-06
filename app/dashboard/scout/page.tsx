@@ -94,9 +94,9 @@ export default async function ScoutDashboard({
     playerIds.length
       ? supabase
           .from("player_competition_stats")
-          .select("player_id, goals, appearances")
+          .select("player_id, goals, assists, appearances")
           .in("player_id", playerIds)
-      : Promise.resolve({ data: [] as { player_id: string; goals: number; appearances: number }[] }),
+      : Promise.resolve({ data: [] as { player_id: string; goals: number; assists: number; appearances: number }[] }),
     playerIds.length
       ? supabase
           .from("team_players")
@@ -110,10 +110,11 @@ export default async function ScoutDashboard({
       .eq("shortlists.scout_profile_id", user.id),
   ]);
 
-  const statsByPlayer = new Map<string, { goals: number; appearances: number }>();
+  const statsByPlayer = new Map<string, { goals: number; assists: number; appearances: number }>();
   for (const row of statRows ?? []) {
-    const existing = statsByPlayer.get(row.player_id) ?? { goals: 0, appearances: 0 };
+    const existing = statsByPlayer.get(row.player_id) ?? { goals: 0, assists: 0, appearances: 0 };
     existing.goals += row.goals;
+    existing.assists += row.assists;
     existing.appearances += row.appearances;
     statsByPlayer.set(row.player_id, existing);
   }
@@ -131,6 +132,7 @@ export default async function ScoutDashboard({
     ...p,
     age: ageFromDob(p.date_of_birth),
     goals: statsByPlayer.get(p.id)?.goals ?? 0,
+    assists: statsByPlayer.get(p.id)?.assists ?? 0,
     appearances: statsByPlayer.get(p.id)?.appearances ?? 0,
     team: teamByPlayer.get(p.id) ?? null,
     shortlisted: shortlistedIds.has(p.id),
@@ -289,6 +291,9 @@ export default async function ScoutDashboard({
                   <div className="mt-2 flex items-center gap-3">
                     <span>
                       <strong>{r.goals}</strong> goals
+                    </span>
+                    <span>
+                      <strong>{r.assists}</strong> assists
                     </span>
                     <span>
                       <strong>{r.appearances}</strong> apps

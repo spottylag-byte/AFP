@@ -35,11 +35,12 @@ export default async function PublicPlayerPage({
 
   const { data: statRows } = await supabase
     .from("player_competition_stats")
-    .select("goals, appearances, yellow_cards, red_cards, competitions(id, name, season)")
+    .select("goals, assists, appearances, yellow_cards, red_cards, competitions(id, name, season)")
     .eq("player_id", playerId);
 
   type StatRow = {
     goals: number;
+    assists: number;
     appearances: number;
     yellow_cards: number;
     red_cards: number;
@@ -50,11 +51,12 @@ export default async function PublicPlayerPage({
   const career = stats.reduce(
     (acc, s) => ({
       goals: acc.goals + s.goals,
+      assists: acc.assists + s.assists,
       appearances: acc.appearances + s.appearances,
       yellow_cards: acc.yellow_cards + s.yellow_cards,
       red_cards: acc.red_cards + s.red_cards,
     }),
-    { goals: 0, appearances: 0, yellow_cards: 0, red_cards: 0 }
+    { goals: 0, assists: 0, appearances: 0, yellow_cards: 0, red_cards: 0 }
   );
 
   return (
@@ -82,7 +84,8 @@ export default async function PublicPlayerPage({
         <h2 className="text-sm font-medium text-zinc-500">Career (verified statistics)</h2>
         <p className="mt-2 text-sm">
           {career.appearances} appearance{career.appearances === 1 ? "" : "s"} ·{" "}
-          {career.goals} goal{career.goals === 1 ? "" : "s"} · {career.yellow_cards} yellow ·{" "}
+          {career.goals} goal{career.goals === 1 ? "" : "s"} · {career.assists} assist
+          {career.assists === 1 ? "" : "s"} · {career.yellow_cards} yellow ·{" "}
           {career.red_cards} red
         </p>
       </div>
@@ -109,7 +112,8 @@ export default async function PublicPlayerPage({
                 </Link>
                 <p className="text-zinc-600 dark:text-zinc-400">
                   {s.appearances} app{s.appearances === 1 ? "" : "s"} · {s.goals} goal
-                  {s.goals === 1 ? "" : "s"} · {s.yellow_cards} yellow · {s.red_cards} red
+                  {s.goals === 1 ? "" : "s"} · {s.assists} assist{s.assists === 1 ? "" : "s"} ·{" "}
+                  {s.yellow_cards} yellow · {s.red_cards} red
                 </p>
               </li>
             ))}

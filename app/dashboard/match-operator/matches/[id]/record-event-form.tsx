@@ -5,6 +5,7 @@ import { recordEvent } from "./actions";
 
 const EVENT_TYPES = [
   { value: "goal", label: "Goal" },
+  { value: "assist", label: "Assist" },
   { value: "own_goal", label: "Own Goal" },
   { value: "yellow_card", label: "Yellow Card" },
   { value: "red_card", label: "Red Card" },
