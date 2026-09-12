@@ -15,7 +15,7 @@ export default async function PublicPlayerPage({
   // Deliberately does not select date_of_birth -- never shown publicly.
   const { data: player } = await supabase
     .from("players")
-    .select("id, full_name, alias, photo_url, football_ids(code)")
+    .select("id, full_name, alias, photo_url, photo_confirmed_by_player, football_ids(code)")
     .eq("id", playerId)
     .is("deleted_at", null)
     .single();
@@ -25,6 +25,7 @@ export default async function PublicPlayerPage({
     full_name: string;
     alias: string | null;
     photo_url: string | null;
+    photo_confirmed_by_player: boolean;
     football_ids: { code: string } | null;
   };
   const p = player as unknown as Player | null;
@@ -50,10 +51,15 @@ export default async function PublicPlayerPage({
 
   const { data: videoRows } = await supabase
     .from("player_videos")
-    .select("id, video_url, caption")
+    .select("id, video_url, caption, confirmed_by_player")
     .eq("player_id", playerId)
     .order("created_at", { ascending: false });
-  const videos = (videoRows ?? []) as { id: string; video_url: string; caption: string | null }[];
+  const videos = (videoRows ?? []) as {
+    id: string;
+    video_url: string;
+    caption: string | null;
+    confirmed_by_player: boolean;
+  }[];
 
   const career = stats.reduce(
     (acc, s) => ({
@@ -75,10 +81,15 @@ export default async function PublicPlayerPage({
       </p>
       <div className="mt-2 flex items-center gap-3">
         <PlayerAvatar fullName={p.full_name} photoUrl={p.photo_url} size={56} />
-        <h1 className="text-2xl font-semibold">
-          {p.full_name}
-          {p.alias ? <span className="text-zinc-500"> &quot;{p.alias}&quot;</span> : ""}
-        </h1>
+        <div>
+          <h1 className="text-2xl font-semibold">
+            {p.full_name}
+            {p.alias ? <span className="text-zinc-500"> &quot;{p.alias}&quot;</span> : ""}
+          </h1>
+          {p.photo_url && p.photo_confirmed_by_player && (
+            <p className="text-xs text-primary-hover">✓ Photo confirmed by player</p>
+          )}
+        </div>
       </div>
       <p className="mt-1 text-sm font-mono text-zinc-600 dark:text-zinc-400">
         {p.football_ids?.code}
@@ -110,6 +121,9 @@ export default async function PublicPlayerPage({
                 />
                 {v.caption && (
                   <p className="mt-1 max-w-64 text-xs text-zinc-500">{v.caption}</p>
+                )}
+                {v.confirmed_by_player && (
+                  <p className="text-xs text-primary-hover">✓ Confirmed by player</p>
                 )}
               </div>
             ))}

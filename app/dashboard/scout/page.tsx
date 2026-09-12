@@ -24,6 +24,8 @@ export default async function ScoutDashboard({
     position?: string;
     minAge?: string;
     maxAge?: string;
+    country?: string;
+    city?: string;
     verified?: string;
     shortlist?: string;
   }>;
@@ -63,11 +65,13 @@ export default async function ScoutDashboard({
 
   let query = supabase
     .from("players")
-    .select("id, full_name, alias, position, height_cm, preferred_foot, photo_url, date_of_birth")
+    .select("id, full_name, alias, position, height_cm, preferred_foot, country, city, photo_url, date_of_birth")
     .is("deleted_at", null);
 
   if (sp.q) query = query.ilike("full_name", `%${sp.q}%`);
   if (sp.position) query = query.eq("position", sp.position);
+  if (sp.country) query = query.ilike("country", `%${sp.country}%`);
+  if (sp.city) query = query.ilike("city", `%${sp.city}%`);
 
   const { data: playerRows } = await query;
 
@@ -78,6 +82,8 @@ export default async function ScoutDashboard({
     position: string | null;
     height_cm: number | null;
     preferred_foot: string | null;
+    country: string | null;
+    city: string | null;
     photo_url: string | null;
     date_of_birth: string;
   };
@@ -234,6 +240,24 @@ export default async function ScoutDashboard({
             </div>
           </div>
 
+          <div className="flex flex-col gap-1">
+            <span>Location</span>
+            <input
+              type="text"
+              name="country"
+              defaultValue={sp.country}
+              placeholder="Country (e.g. Nigeria)"
+              className="rounded border border-zinc-300 px-3 py-2 dark:border-zinc-700 dark:bg-zinc-900"
+            />
+            <input
+              type="text"
+              name="city"
+              defaultValue={sp.city}
+              placeholder="City (e.g. Lagos)"
+              className="mt-1 rounded border border-zinc-300 px-3 py-2 dark:border-zinc-700 dark:bg-zinc-900"
+            />
+          </div>
+
           <label className="flex items-center justify-between">
             <span>Has verified match stats</span>
             <input
@@ -296,6 +320,9 @@ export default async function ScoutDashboard({
                   </p>
                   <p className="text-zinc-600 dark:text-zinc-400">
                     {r.team ?? "No current team"}
+                    {r.city || r.country
+                      ? ` · ${[r.city, r.country].filter(Boolean).join(", ")}`
+                      : ""}
                   </p>
                   <div className="mt-2 flex items-center gap-3">
                     <span>

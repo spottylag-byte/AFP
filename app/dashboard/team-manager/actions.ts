@@ -45,7 +45,9 @@ export async function registerPlayerForTeam(
   alias: string | null,
   position: string | null,
   heightCm: number | null,
-  preferredFoot: string | null
+  preferredFoot: string | null,
+  country: string | null,
+  city: string | null
 ) {
   const supabase = await createClient();
   const { data, error } = await supabase
@@ -58,6 +60,8 @@ export async function registerPlayerForTeam(
       p_position: position,
       p_height_cm: heightCm,
       p_preferred_foot: preferredFoot,
+      p_country: country,
+      p_city: city,
     })
     .single();
 

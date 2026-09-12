@@ -95,7 +95,10 @@ export default async function AdminDashboard() {
       </div>
 
       <div className="mt-8 grid grid-cols-2 gap-3 sm:grid-cols-3 lg:grid-cols-6">
-        <div className="rounded-lg border border-zinc-200 bg-white p-3 shadow-sm dark:border-zinc-800 dark:bg-zinc-900/40">
+        <Link
+          href="/dashboard/admin/users"
+          className="rounded-lg border border-zinc-200 bg-white p-3 shadow-sm hover:border-primary dark:border-zinc-800 dark:bg-zinc-900/40"
+        >
           <p className="text-2xl font-semibold">{totalUsers}</p>
           <p className="text-xs text-zinc-500">
             Users
@@ -107,8 +110,11 @@ export default async function AdminDashboard() {
               </span>
             )}
           </p>
-        </div>
-        <div className="rounded-lg border border-zinc-200 bg-white p-3 shadow-sm dark:border-zinc-800 dark:bg-zinc-900/40">
+        </Link>
+        <Link
+          href="/dashboard/admin/competitions"
+          className="rounded-lg border border-zinc-200 bg-white p-3 shadow-sm hover:border-primary dark:border-zinc-800 dark:bg-zinc-900/40"
+        >
           <p className="text-2xl font-semibold">{(competitionStatuses ?? []).length}</p>
           <p className="text-xs text-zinc-500">
             Competitions
@@ -117,22 +123,31 @@ export default async function AdminDashboard() {
               {competitionsByStatus.published ?? 0}
             </span>
           </p>
-        </div>
-        <div className="rounded-lg border border-zinc-200 bg-white p-3 shadow-sm dark:border-zinc-800 dark:bg-zinc-900/40">
+        </Link>
+        <Link
+          href="/dashboard/admin/teams"
+          className="rounded-lg border border-zinc-200 bg-white p-3 shadow-sm hover:border-primary dark:border-zinc-800 dark:bg-zinc-900/40"
+        >
           <p className="text-2xl font-semibold">{teamsCount ?? 0}</p>
           <p className="text-xs text-zinc-500">Teams</p>
-        </div>
-        <div className="rounded-lg border border-zinc-200 bg-white p-3 shadow-sm dark:border-zinc-800 dark:bg-zinc-900/40">
+        </Link>
+        <Link
+          href="/dashboard/admin/players"
+          className="rounded-lg border border-zinc-200 bg-white p-3 shadow-sm hover:border-primary dark:border-zinc-800 dark:bg-zinc-900/40"
+        >
           <p className="text-2xl font-semibold">{playersCount ?? 0}</p>
           <p className="text-xs text-zinc-500">Players</p>
-        </div>
-        <div className="rounded-lg border border-zinc-200 bg-white p-3 shadow-sm dark:border-zinc-800 dark:bg-zinc-900/40">
+        </Link>
+        <Link
+          href="/dashboard/admin/matches"
+          className="rounded-lg border border-zinc-200 bg-white p-3 shadow-sm hover:border-primary dark:border-zinc-800 dark:bg-zinc-900/40"
+        >
           <p className="text-2xl font-semibold">{(matchStatuses ?? []).length}</p>
           <p className="text-xs text-zinc-500">
             Matches
             <span className="block">published: {matchesByStatus.published ?? 0}</span>
           </p>
-        </div>
+        </Link>
         <div className="rounded-lg border border-zinc-200 bg-white p-3 shadow-sm dark:border-zinc-800 dark:bg-zinc-900/40">
           <p className="text-2xl font-semibold">₦{totalRevenue.toLocaleString()}</p>
           <p className="text-xs text-zinc-500">Revenue (completed)</p>

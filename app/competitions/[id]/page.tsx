@@ -3,6 +3,7 @@ import { notFound } from "next/navigation";
 import { createClient } from "@/lib/supabase/server";
 import WhatsAppShareLink from "@/components/whatsapp-share-link";
 import Badge from "@/components/badge";
+import PlayerAvatar from "@/components/player-avatar";
 
 export default async function PublicCompetitionPage({
   params,
@@ -80,7 +81,7 @@ export default async function PublicCompetitionPage({
 
   const { data: scorerRows } = await supabase
     .from("player_competition_stats")
-    .select("goals, assists, player_id, players(full_name, alias)")
+    .select("goals, assists, player_id, players(full_name, alias, photo_url)")
     .eq("competition_id", competitionId)
     .gt("goals", 0)
     .order("goals", { ascending: false });
@@ -89,7 +90,7 @@ export default async function PublicCompetitionPage({
     goals: number;
     assists: number;
     player_id: string;
-    players: { full_name: string; alias: string | null } | null;
+    players: { full_name: string; alias: string | null; photo_url: string | null } | null;
   };
   const scorers = (scorerRows ?? []) as unknown as ScorerRow[];
 
@@ -211,18 +212,31 @@ export default async function PublicCompetitionPage({
         {scorers.length === 0 ? (
           <p className="mt-2 text-sm text-zinc-600 dark:text-zinc-400">No goals yet.</p>
         ) : (
-          <ul className="mt-2 flex flex-col gap-1 text-sm">
+          <ol className="mt-2 grid grid-cols-1 gap-2 sm:grid-cols-2">
             {scorers.map((s, i) => (
-              <li key={i}>
-                <Link href={`/players/${s.player_id}`} className="underline">
-                  {s.players?.full_name}
-                  {s.players?.alias ? ` (${s.players.alias})` : ""}
-                </Link>{" "}
-                — {s.goals} goal{s.goals === 1 ? "" : "s"}
-                {s.assists > 0 ? `, ${s.assists} assist${s.assists === 1 ? "" : "s"}` : ""}
+              <li
+                key={i}
+                className="flex items-center gap-3 rounded-lg border border-zinc-200 p-3 text-sm dark:border-zinc-800"
+              >
+                <span className="w-5 shrink-0 text-right text-zinc-400">{i + 1}.</span>
+                <PlayerAvatar
+                  fullName={s.players?.full_name ?? ""}
+                  photoUrl={s.players?.photo_url ?? null}
+                  size={36}
+                />
+                <div className="min-w-0">
+                  <Link href={`/players/${s.player_id}`} className="font-medium underline">
+                    {s.players?.full_name}
+                    {s.players?.alias ? ` (${s.players.alias})` : ""}
+                  </Link>
+                  <p className="text-zinc-600 dark:text-zinc-400">
+                    {s.goals} goal{s.goals === 1 ? "" : "s"}
+                    {s.assists > 0 ? `, ${s.assists} assist${s.assists === 1 ? "" : "s"}` : ""}
+                  </p>
+                </div>
               </li>
             ))}
-          </ul>
+          </ol>
         )}
       </div>
     </main>

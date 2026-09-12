@@ -27,6 +27,8 @@ export default function AddPlayerForm({ teamId }: { teamId: string }) {
   const [position, setPosition] = useState("");
   const [heightCm, setHeightCm] = useState("");
   const [preferredFoot, setPreferredFoot] = useState("");
+  const [country, setCountry] = useState("");
+  const [city, setCity] = useState("");
   const [stage, setStage] = useState<Stage>("form");
   const [candidates, setCandidates] = useState<Candidate[]>([]);
   const [error, setError] = useState<string | null>(null);
@@ -60,7 +62,9 @@ export default function AddPlayerForm({ teamId }: { teamId: string }) {
         alias || null,
         position || null,
         heightCm ? Number(heightCm) : null,
-        preferredFoot || null
+        preferredFoot || null,
+        country || null,
+        city || null
       );
       setAdded({ footballIdCode: result.football_id_code });
       setStage("added");
@@ -94,6 +98,8 @@ export default function AddPlayerForm({ teamId }: { teamId: string }) {
     setPosition("");
     setHeightCm("");
     setPreferredFoot("");
+    setCountry("");
+    setCity("");
     setCandidates([]);
     setAdded(null);
   }
@@ -267,6 +273,28 @@ export default function AddPlayerForm({ teamId }: { teamId: string }) {
             <option value="right">Right</option>
             <option value="both">Both</option>
           </select>
+        </label>
+      </div>
+      <div className="flex gap-3">
+        <label className="flex flex-1 flex-col gap-1 text-sm">
+          Country (optional)
+          <input
+            type="text"
+            value={country}
+            onChange={(e) => setCountry(e.target.value)}
+            placeholder="e.g. Nigeria"
+            className="rounded border border-zinc-300 px-3 py-2 dark:border-zinc-700 dark:bg-zinc-900"
+          />
+        </label>
+        <label className="flex flex-1 flex-col gap-1 text-sm">
+          City (optional)
+          <input
+            type="text"
+            value={city}
+            onChange={(e) => setCity(e.target.value)}
+            placeholder="e.g. Lagos"
+            className="rounded border border-zinc-300 px-3 py-2 dark:border-zinc-700 dark:bg-zinc-900"
+          />
         </label>
       </div>
       {error && <p className="text-sm text-red-600">{error}</p>}
