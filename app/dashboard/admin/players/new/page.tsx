@@ -1,5 +1,5 @@
 import { requireRole } from "@/lib/auth";
-import RegisterPlayerForm from "./register-player-form";
+import PlayerRegistrationForm from "@/components/player-registration-form";
 
 export default async function NewPlayerPage() {
   await requireRole("platform_admin");
@@ -11,7 +11,9 @@ export default async function NewPlayerPage() {
         Creates a permanent Football ID. We check for likely duplicates
         first — never auto-merged, always a human call.
       </p>
-      <RegisterPlayerForm />
+      <div className="mt-6">
+        <PlayerRegistrationForm revalidatePathTarget="/dashboard/admin/players/new" />
+      </div>
     </div>
   );
 }

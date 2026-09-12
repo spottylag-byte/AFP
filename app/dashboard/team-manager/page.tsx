@@ -1,7 +1,7 @@
 import { requireRole } from "@/lib/auth";
 import { createClient } from "@/lib/supabase/server";
 import OnboardingForm from "./onboarding-form";
-import AddPlayerForm from "./add-player-form";
+import PlayerRegistrationForm from "@/components/player-registration-form";
 import PlayerPhotoUpload from "@/components/player-photo-upload";
 import PlayerVideoManager from "@/components/player-video-manager";
 
@@ -83,7 +83,10 @@ export default async function TeamManagerDashboard() {
       <div className="mt-8 max-w-md">
         <h2 className="text-sm font-medium text-zinc-500">Add a player</h2>
         <div className="mt-2">
-          <AddPlayerForm teamId={team.id} />
+          <PlayerRegistrationForm
+            teamId={team.id}
+            revalidatePathTarget="/dashboard/team-manager"
+          />
         </div>
       </div>
 

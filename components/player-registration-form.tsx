@@ -2,10 +2,10 @@
 
 import { useState } from "react";
 import {
-  searchExistingPlayerForTeam,
-  registerPlayerForTeam,
+  searchExistingPlayer,
+  registerPlayer,
   addExistingPlayerToTeam,
-} from "./actions";
+} from "@/lib/player-registration-actions";
 
 type Candidate = {
   id: string;
@@ -17,9 +17,22 @@ type Candidate = {
   already_on_this_team: boolean;
 };
 
-type Stage = "form" | "reviewing" | "added";
+type Stage = "form" | "reviewing" | "done";
 
-export default function AddPlayerForm({ teamId }: { teamId: string }) {
+/**
+ * Shared "search for duplicates, then register or link" form. Used
+ * standalone (no teamId -- admin registering a player with no roster
+ * to add them to) and team-scoped (teamId given -- team_manager /
+ * organizer building a roster, where a matched duplicate can be linked
+ * in instead of re-registered).
+ */
+export default function PlayerRegistrationForm({
+  teamId,
+  revalidatePathTarget,
+}: {
+  teamId?: string;
+  revalidatePathTarget: string;
+}) {
   const [firstName, setFirstName] = useState("");
   const [lastName, setLastName] = useState("");
   const [alias, setAlias] = useState("");
@@ -33,14 +46,16 @@ export default function AddPlayerForm({ teamId }: { teamId: string }) {
   const [candidates, setCandidates] = useState<Candidate[]>([]);
   const [error, setError] = useState<string | null>(null);
   const [submitting, setSubmitting] = useState(false);
-  const [added, setAdded] = useState<{ footballIdCode: string } | null>(null);
+  const [result, setResult] = useState<{ footballIdCode: string; linked: boolean } | null>(
+    null
+  );
 
   async function handleCheck(e: React.FormEvent) {
     e.preventDefault();
     setError(null);
     setSubmitting(true);
     try {
-      const data = await searchExistingPlayerForTeam(firstName, lastName, dateOfBirth, teamId);
+      const data = await searchExistingPlayer(firstName, lastName, dateOfBirth, teamId);
       setCandidates((data as Candidate[]) ?? []);
       setStage("reviewing");
     } catch (err) {
@@ -54,20 +69,23 @@ export default function AddPlayerForm({ teamId }: { teamId: string }) {
     setError(null);
     setSubmitting(true);
     try {
-      const result = await registerPlayerForTeam(
-        firstName,
-        lastName,
-        dateOfBirth,
-        teamId,
-        alias || null,
-        position || null,
-        heightCm ? Number(heightCm) : null,
-        preferredFoot || null,
-        country || null,
-        city || null
+      const data = await registerPlayer(
+        {
+          firstName,
+          lastName,
+          dateOfBirth,
+          teamId,
+          alias: alias || null,
+          position: position || null,
+          heightCm: heightCm ? Number(heightCm) : null,
+          preferredFoot: preferredFoot || null,
+          country: country || null,
+          city: city || null,
+        },
+        revalidatePathTarget
       );
-      setAdded({ footballIdCode: result.football_id_code });
-      setStage("added");
+      setResult({ footballIdCode: data.football_id_code, linked: false });
+      setStage("done");
     } catch (err) {
       setError(err instanceof Error ? err.message : "Something went wrong");
     } finally {
@@ -76,12 +94,13 @@ export default function AddPlayerForm({ teamId }: { teamId: string }) {
   }
 
   async function handleAddExisting(candidate: Candidate) {
+    if (!teamId) return;
     setError(null);
     setSubmitting(true);
     try {
-      await addExistingPlayerToTeam(teamId, candidate.id);
-      setAdded({ footballIdCode: candidate.football_id_code });
-      setStage("added");
+      await addExistingPlayerToTeam(teamId, candidate.id, revalidatePathTarget);
+      setResult({ footballIdCode: candidate.football_id_code, linked: true });
+      setStage("done");
     } catch (err) {
       setError(err instanceof Error ? err.message : "Something went wrong");
     } finally {
@@ -101,21 +120,24 @@ export default function AddPlayerForm({ teamId }: { teamId: string }) {
     setCountry("");
     setCity("");
     setCandidates([]);
-    setAdded(null);
+    setResult(null);
   }
 
-  if (stage === "added" && added) {
+  const inputClass =
+    "rounded border border-zinc-300 px-3 py-2 dark:border-zinc-700 dark:bg-zinc-900";
+
+  if (stage === "done" && result) {
     return (
-      <div className="rounded border border-green-300 bg-green-50 p-4 dark:border-green-800 dark:bg-green-950">
-        <p className="font-medium">Added to roster.</p>
-        <p className="mt-1 text-sm">
-          Football ID: <span className="font-mono">{added.footballIdCode}</span>
+      <div className="rounded border border-green-300 bg-green-50 p-4 text-sm dark:border-green-800 dark:bg-green-950">
+        <p className="font-medium">{result.linked ? "Added to roster." : "Player registered."}</p>
+        <p className="mt-1">
+          Football ID: <span className="font-mono">{result.footballIdCode}</span>
         </p>
         <button
           onClick={reset}
           className="mt-3 rounded border border-zinc-300 px-3 py-1.5 text-sm dark:border-zinc-700"
         >
-          Add another
+          {teamId ? "Add another" : "Register another"}
         </button>
       </div>
     );
@@ -143,19 +165,20 @@ export default function AddPlayerForm({ teamId }: { teamId: string }) {
                   Born {c.date_of_birth} · {c.football_id_code} · similarity{" "}
                   {(c.similarity * 100).toFixed(0)}%
                 </p>
-                {c.already_on_this_team ? (
-                  <p className="mt-2 text-xs font-medium text-amber-700 dark:text-amber-500">
-                    Already on this roster
-                  </p>
-                ) : (
-                  <button
-                    onClick={() => handleAddExisting(c)}
-                    disabled={submitting}
-                    className="mt-2 rounded bg-primary hover:bg-primary-hover px-3 py-1 text-xs text-white disabled:opacity-50 dark:bg-primary dark:hover:bg-primary-hover"
-                  >
-                    This is the same person — add to roster instead
-                  </button>
-                )}
+                {teamId &&
+                  (c.already_on_this_team ? (
+                    <p className="mt-2 text-xs font-medium text-amber-700 dark:text-amber-500">
+                      Already on this roster
+                    </p>
+                  ) : (
+                    <button
+                      onClick={() => handleAddExisting(c)}
+                      disabled={submitting}
+                      className="mt-2 rounded bg-primary hover:bg-primary-hover px-3 py-1 text-xs text-white disabled:opacity-50 dark:bg-primary dark:hover:bg-primary-hover"
+                    >
+                      This is the same person — add to roster instead
+                    </button>
+                  ))}
               </li>
             ))}
           </ul>
@@ -175,9 +198,11 @@ export default function AddPlayerForm({ teamId }: { teamId: string }) {
           >
             {submitting
               ? "Working..."
-              : candidates.length > 0
-              ? "This is a different person — register as new"
-              : "Add to roster"}
+              : candidates.length === 0
+              ? teamId
+                ? "Add to roster"
+                : "Register player"
+              : "This is a different person — register as new"}
           </button>
           <button
             onClick={() => setStage("form")}
@@ -200,7 +225,7 @@ export default function AddPlayerForm({ teamId }: { teamId: string }) {
             type="text"
             value={firstName}
             onChange={(e) => setFirstName(e.target.value)}
-            className="rounded border border-zinc-300 px-3 py-2 dark:border-zinc-700 dark:bg-zinc-900"
+            className={inputClass}
           />
         </label>
         <label className="flex flex-1 flex-col gap-1 text-sm">
@@ -210,7 +235,7 @@ export default function AddPlayerForm({ teamId }: { teamId: string }) {
             type="text"
             value={lastName}
             onChange={(e) => setLastName(e.target.value)}
-            className="rounded border border-zinc-300 px-3 py-2 dark:border-zinc-700 dark:bg-zinc-900"
+            className={inputClass}
           />
         </label>
       </div>
@@ -221,7 +246,7 @@ export default function AddPlayerForm({ teamId }: { teamId: string }) {
           value={alias}
           onChange={(e) => setAlias(e.target.value)}
           placeholder="e.g. Jay-Jay"
-          className="rounded border border-zinc-300 px-3 py-2 dark:border-zinc-700 dark:bg-zinc-900"
+          className={inputClass}
         />
       </label>
       <label className="flex flex-col gap-1 text-sm">
@@ -231,16 +256,12 @@ export default function AddPlayerForm({ teamId }: { teamId: string }) {
           type="date"
           value={dateOfBirth}
           onChange={(e) => setDateOfBirth(e.target.value)}
-          className="rounded border border-zinc-300 px-3 py-2 dark:border-zinc-700 dark:bg-zinc-900"
+          className={inputClass}
         />
       </label>
       <label className="flex flex-col gap-1 text-sm">
         Position (optional)
-        <select
-          value={position}
-          onChange={(e) => setPosition(e.target.value)}
-          className="rounded border border-zinc-300 px-3 py-2 dark:border-zinc-700 dark:bg-zinc-900"
-        >
+        <select value={position} onChange={(e) => setPosition(e.target.value)} className={inputClass}>
           <option value="">Not specified</option>
           <option value="GK">Goalkeeper</option>
           <option value="DEF">Defender</option>
@@ -258,7 +279,7 @@ export default function AddPlayerForm({ teamId }: { teamId: string }) {
             value={heightCm}
             onChange={(e) => setHeightCm(e.target.value)}
             placeholder="e.g. 178"
-            className="rounded border border-zinc-300 px-3 py-2 dark:border-zinc-700 dark:bg-zinc-900"
+            className={inputClass}
           />
         </label>
         <label className="flex flex-1 flex-col gap-1 text-sm">
@@ -266,7 +287,7 @@ export default function AddPlayerForm({ teamId }: { teamId: string }) {
           <select
             value={preferredFoot}
             onChange={(e) => setPreferredFoot(e.target.value)}
-            className="rounded border border-zinc-300 px-3 py-2 dark:border-zinc-700 dark:bg-zinc-900"
+            className={inputClass}
           >
             <option value="">Not specified</option>
             <option value="left">Left</option>
@@ -283,7 +304,7 @@ export default function AddPlayerForm({ teamId }: { teamId: string }) {
             value={country}
             onChange={(e) => setCountry(e.target.value)}
             placeholder="e.g. Nigeria"
-            className="rounded border border-zinc-300 px-3 py-2 dark:border-zinc-700 dark:bg-zinc-900"
+            className={inputClass}
           />
         </label>
         <label className="flex flex-1 flex-col gap-1 text-sm">
@@ -293,7 +314,7 @@ export default function AddPlayerForm({ teamId }: { teamId: string }) {
             value={city}
             onChange={(e) => setCity(e.target.value)}
             placeholder="e.g. Lagos"
-            className="rounded border border-zinc-300 px-3 py-2 dark:border-zinc-700 dark:bg-zinc-900"
+            className={inputClass}
           />
         </label>
       </div>
