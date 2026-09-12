@@ -1,6 +1,7 @@
 import { redirect } from "next/navigation";
 import { createClient } from "@/lib/supabase/server";
 import SignOutButton from "./sign-out-button";
+import Logo from "@/components/logo";
 
 export default async function DashboardLayout({
   children,
@@ -26,11 +27,9 @@ export default async function DashboardLayout({
     <div className="min-h-screen">
       <header className="flex items-center justify-between border-b border-zinc-200 px-6 py-4 dark:border-zinc-800">
         <div className="flex items-center gap-3">
-          <div className="flex h-9 w-9 items-center justify-center rounded-full bg-primary text-sm font-bold text-white">
-            AF
-          </div>
+          <Logo size={36} />
           <div>
-            <p className="font-semibold">African Football Platform</p>
+            <p className="font-semibold">Soccer Point</p>
             {profile && (
               <p className="text-sm text-zinc-600 dark:text-zinc-400">
                 {profile.full_name} ·{" "}

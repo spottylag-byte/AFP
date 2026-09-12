@@ -4,6 +4,7 @@ import { useState } from "react";
 import { useRouter } from "next/navigation";
 import Link from "next/link";
 import { createClient } from "@/lib/supabase/client";
+import Logo from "@/components/logo";
 
 export default function LoginPage() {
   const router = useRouter();
@@ -44,10 +45,8 @@ export default function LoginPage() {
           href="/"
           className="mb-6 flex items-center justify-center gap-2 text-sm text-ink-soft hover:text-ink"
         >
-          <span className="flex h-8 w-8 items-center justify-center rounded-full border-2 border-accent text-xs font-bold text-accent-hover">
-            AFP
-          </span>
-          African Football Platform
+          <Logo size={32} />
+          Soccer Point
         </Link>
 
         <div className="rounded-lg border border-ink/10 bg-white p-6 shadow-[0_20px_50px_rgba(22,33,58,0.12)] sm:p-8">

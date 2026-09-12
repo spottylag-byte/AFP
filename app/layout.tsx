@@ -13,8 +13,11 @@ const geistMono = Geist_Mono({
 });
 
 export const metadata: Metadata = {
-  title: "African Football Platform",
-  description: "Grassroots football competition management platform",
+  metadataBase: new URL(
+    process.env.NEXT_PUBLIC_SITE_URL ?? "https://african-football-platform.vercel.app"
+  ),
+  title: "Soccer Point",
+  description: "Verified grassroots football competitions and player records, across Africa.",
 };
 
 export default function RootLayout({ children }: LayoutProps<"/">) {

@@ -6,6 +6,7 @@ import { createCompetition } from "./actions";
 export default function CreateCompetitionForm() {
   const [name, setName] = useState("");
   const [season, setSeason] = useState("");
+  const [description, setDescription] = useState("");
   const [error, setError] = useState<string | null>(null);
   const [isPending, startTransition] = useTransition();
 
@@ -14,9 +15,10 @@ export default function CreateCompetitionForm() {
     setError(null);
     startTransition(async () => {
       try {
-        await createCompetition(name, season);
+        await createCompetition(name, season, description);
         setName("");
         setSeason("");
+        setDescription("");
       } catch (err) {
         setError(err instanceof Error ? err.message : "Something went wrong");
       }
@@ -24,31 +26,44 @@ export default function CreateCompetitionForm() {
   }
 
   return (
-    <form onSubmit={handleSubmit} className="flex flex-wrap items-end gap-3">
-      <label className="flex flex-col gap-1 text-sm">
-        Competition name
-        <input
-          required
-          type="text"
-          value={name}
-          onChange={(e) => setName(e.target.value)}
-          className="rounded border border-zinc-300 px-3 py-2 dark:border-zinc-700 dark:bg-zinc-900"
-        />
-      </label>
-      <label className="flex flex-col gap-1 text-sm">
-        Season (optional)
-        <input
-          type="text"
-          value={season}
-          onChange={(e) => setSeason(e.target.value)}
-          placeholder="e.g. 2026"
+    <form onSubmit={handleSubmit} className="flex flex-col gap-3">
+      <div className="flex flex-wrap items-end gap-3">
+        <label className="flex flex-col gap-1 text-sm">
+          Competition name
+          <input
+            required
+            type="text"
+            value={name}
+            onChange={(e) => setName(e.target.value)}
+            className="rounded border border-zinc-300 px-3 py-2 dark:border-zinc-700 dark:bg-zinc-900"
+          />
+        </label>
+        <label className="flex flex-col gap-1 text-sm">
+          Season (optional)
+          <input
+            type="text"
+            value={season}
+            onChange={(e) => setSeason(e.target.value)}
+            placeholder="e.g. 2026"
+            className="rounded border border-zinc-300 px-3 py-2 dark:border-zinc-700 dark:bg-zinc-900"
+          />
+        </label>
+      </div>
+      <label className="flex max-w-md flex-col gap-1 text-sm">
+        Short description (optional, shown on the public page)
+        <textarea
+          value={description}
+          onChange={(e) => setDescription(e.target.value)}
+          placeholder="e.g. A 10-team community league for U20 clubs across Lagos."
+          rows={2}
+          maxLength={280}
           className="rounded border border-zinc-300 px-3 py-2 dark:border-zinc-700 dark:bg-zinc-900"
         />
       </label>
       <button
         type="submit"
         disabled={isPending}
-        className="rounded bg-primary hover:bg-primary-hover px-4 py-2 text-sm text-white disabled:opacity-50 dark:bg-primary dark:hover:bg-primary-hover"
+        className="w-fit rounded bg-primary hover:bg-primary-hover px-4 py-2 text-sm text-white disabled:opacity-50 dark:bg-primary dark:hover:bg-primary-hover"
       >
         {isPending ? "Creating..." : "Create competition"}
       </button>

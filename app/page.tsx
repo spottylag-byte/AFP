@@ -1,6 +1,7 @@
 import Link from "next/link";
 import { Bebas_Neue, Work_Sans } from "next/font/google";
 import Badge from "@/components/badge";
+import Logo from "@/components/logo";
 
 const display = Bebas_Neue({ subsets: ["latin"], weight: "400", variable: "--font-display" });
 const body = Work_Sans({ subsets: ["latin"], weight: ["400", "500", "600", "700"] });
@@ -33,11 +34,9 @@ export default function Home() {
     <div className={`${display.variable} ${body.className} bg-chalk text-ink`}>
       <nav className="flex items-center justify-between bg-ink px-[6vw] py-5">
         <div className="flex items-center gap-3">
-          <div className="flex h-9 w-9 shrink-0 items-center justify-center rounded-full border-2 border-accent font-[family-name:var(--font-display)] text-sm text-accent">
-            AFP
-          </div>
+          <Logo size={36} />
           <span className="text-sm font-semibold tracking-wide text-chalk">
-            African Football Platform
+            Soccer Point
           </span>
         </div>
         <div className="hidden items-center gap-8 sm:flex">
@@ -92,9 +91,9 @@ export default function Home() {
               COUNTED.
             </h1>
             <p className="mt-6 max-w-[46ch] text-lg text-[#B9C3D4]">
-              A digital home for grassroots football competitions in Nigeria — organizers
-              run their tournament, and every result becomes a verified record instead of
-              a rumor in a WhatsApp group.
+              A digital home for grassroots football competitions across Africa — starting
+              in Nigeria. Organizers run their tournament, and every result becomes a
+              verified record instead of a rumor in a WhatsApp group.
             </p>
             <div className="mt-8 flex flex-wrap gap-3">
               <Link
@@ -226,9 +225,16 @@ export default function Home() {
         </Link>
       </section>
 
-      <footer className="bg-ink-soft px-[6vw] py-7 text-center text-[13.5px] text-[#DEE4EC]">
-        African Football Platform — built for grassroots football in Nigeria, expanding
-        across Africa.
+      <footer className="flex flex-col items-center gap-2 bg-ink-soft px-[6vw] py-7 text-center text-[13.5px] text-[#DEE4EC]">
+        <p>Soccer Point — a showcase of grassroots football talent across Africa, starting in Nigeria.</p>
+        <p className="flex gap-4 text-xs text-[#B9C3D4]">
+          <Link href="/privacy" className="underline">
+            Privacy Policy
+          </Link>
+          <Link href="/terms" className="underline">
+            Terms of Service
+          </Link>
+        </p>
       </footer>
     </div>
   );

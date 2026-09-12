@@ -16,12 +16,12 @@ export default function Icon() {
           alignItems: "center",
           justifyContent: "center",
           color: "#D9A441",
-          fontSize: 12,
+          fontSize: 13,
           fontWeight: 700,
           fontFamily: "sans-serif",
         }}
       >
-        AFP
+        SP
       </div>
     ),
     size

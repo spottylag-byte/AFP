@@ -35,7 +35,7 @@ export default async function PublicTeamPage({
     <main className="mx-auto max-w-2xl px-6 py-10">
       <p className="text-sm text-zinc-500">
         <Link href="/" className="underline">
-          African Football Platform
+          Soccer Point
         </Link>
       </p>
       <h1 className="mt-2 text-2xl font-semibold">{team.name}</h1>

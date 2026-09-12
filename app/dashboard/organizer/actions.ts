@@ -20,7 +20,7 @@ export async function createOrganizerProfile(organizationName: string) {
   revalidatePath("/dashboard/organizer");
 }
 
-export async function createCompetition(name: string, season: string) {
+export async function createCompetition(name: string, season: string, description: string) {
   const supabase = await createClient();
   const {
     data: { user },
@@ -42,6 +42,7 @@ export async function createCompetition(name: string, season: string) {
     organizer_id: organizer.id,
     name,
     season: season || null,
+    description: description || null,
   });
 
   if (error) throw new Error(error.message);

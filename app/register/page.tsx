@@ -4,6 +4,7 @@ import { useState } from "react";
 import { useRouter } from "next/navigation";
 import Link from "next/link";
 import { createClient } from "@/lib/supabase/client";
+import Logo from "@/components/logo";
 import { SELF_REGISTERABLE_ROLES, type UserRole } from "@/lib/roles";
 import PhoneInput from "@/components/phone-input";
 
@@ -64,9 +65,7 @@ export default function RegisterPage() {
   if (checkEmail) {
     return (
       <main className="flex min-h-screen flex-col items-center justify-center gap-4 bg-chalk px-6 text-center text-ink">
-        <div className="flex h-12 w-12 items-center justify-center rounded-full border-2 border-accent text-sm font-bold text-accent-hover">
-          AFP
-        </div>
+        <Logo size={48} />
         <h1 className="text-2xl font-semibold">Check your email</h1>
         <p className="max-w-sm text-ink-soft">
           We sent a confirmation link to {email}. Click it to finish setting up your
@@ -83,10 +82,8 @@ export default function RegisterPage() {
           href="/"
           className="mb-6 flex items-center justify-center gap-2 text-sm text-ink-soft hover:text-ink"
         >
-          <span className="flex h-8 w-8 items-center justify-center rounded-full border-2 border-accent text-xs font-bold text-accent-hover">
-            AFP
-          </span>
-          African Football Platform
+          <Logo size={32} />
+          Soccer Point
         </Link>
 
         <div className="rounded-lg border border-ink/10 bg-white p-6 shadow-[0_20px_50px_rgba(22,33,58,0.12)] sm:p-8">

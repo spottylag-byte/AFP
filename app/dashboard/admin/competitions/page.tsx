@@ -8,7 +8,7 @@ export default async function AdminCompetitionsPage() {
 
   const { data: competitions } = await supabase
     .from("competitions")
-    .select("id, name, season, status, created_at, organizers(organization_name)")
+    .select("id, name, season, status, description, created_at, organizers(organization_name)")
     .order("created_at", { ascending: false });
 
   type Row = {
@@ -16,6 +16,7 @@ export default async function AdminCompetitionsPage() {
     name: string;
     season: string | null;
     status: string;
+    description: string | null;
     created_at: string;
     organizers: { organization_name: string } | null;
   };
@@ -48,6 +49,11 @@ export default async function AdminCompetitionsPage() {
                     {c.name}
                     {c.season ? ` (${c.season})` : ""}
                   </Link>
+                  {c.description && (
+                    <p className="mt-0.5 max-w-xs truncate text-xs text-zinc-500">
+                      {c.description}
+                    </p>
+                  )}
                 </td>
                 <td className="py-2 pr-4">{c.organizers?.organization_name ?? "—"}</td>
                 <td className="py-2 pr-4 capitalize">{c.status}</td>

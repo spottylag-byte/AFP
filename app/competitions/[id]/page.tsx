@@ -15,7 +15,7 @@ export default async function PublicCompetitionPage({
 
   const { data: competition } = await supabase
     .from("competitions")
-    .select("id, name, season, status, organizers(organization_name)")
+    .select("id, name, season, status, description, organizers(organization_name)")
     .eq("id", competitionId)
     .single();
 
@@ -24,6 +24,7 @@ export default async function PublicCompetitionPage({
     name: string;
     season: string | null;
     status: string;
+    description: string | null;
     organizers: { organization_name: string } | null;
   };
   const comp = competition as unknown as Competition | null;
@@ -98,7 +99,7 @@ export default async function PublicCompetitionPage({
     <main className="mx-auto max-w-2xl px-6 py-10">
       <p className="text-sm text-zinc-500">
         <Link href="/" className="underline">
-          African Football Platform
+          Soccer Point
         </Link>
       </p>
       <h1 className="mt-2 text-2xl font-semibold">
@@ -108,6 +109,11 @@ export default async function PublicCompetitionPage({
       <p className="mt-1 text-sm text-zinc-600 dark:text-zinc-400">
         {comp.organizers?.organization_name}
       </p>
+      {comp.description && (
+        <p className="mt-3 max-w-lg text-sm text-zinc-700 dark:text-zinc-300">
+          {comp.description}
+        </p>
+      )}
       <div className="mt-3">
         <WhatsAppShareLink
           path={`/competitions/${competitionId}`}
