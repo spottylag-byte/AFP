@@ -17,6 +17,7 @@ export default async function PublicCompetitionPage({
     .from("competitions")
     .select("id, name, season, status, description, organizers(organization_name)")
     .eq("id", competitionId)
+    .is("deleted_at", null)
     .single();
 
   type Competition = {
@@ -49,6 +50,7 @@ export default async function PublicCompetitionPage({
       "id, scheduled_at, status, home_score, away_score, home:teams!home_team_id(name), away:teams!away_team_id(name)"
     )
     .eq("competition_id", competitionId)
+    .is("deleted_at", null)
     .order("scheduled_at", { ascending: true });
 
   type FixtureRow = {

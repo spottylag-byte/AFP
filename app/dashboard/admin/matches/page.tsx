@@ -12,6 +12,7 @@ export default async function AdminMatchesPage() {
     .select(
       "id, status, scheduled_at, home_score, away_score, competition_id, home:teams!home_team_id(name), away:teams!away_team_id(name), competitions(name)"
     )
+    .is("deleted_at", null)
     .order("scheduled_at", { ascending: false })
     .limit(200);
 

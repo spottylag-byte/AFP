@@ -18,6 +18,7 @@ export default async function OrganizerTeamRosterPage({
     .from("teams")
     .select("id, name, team_manager_profile_id")
     .eq("id", teamId)
+    .is("deleted_at", null)
     .maybeSingle();
 
   if (!team || team.team_manager_profile_id !== user.id) {

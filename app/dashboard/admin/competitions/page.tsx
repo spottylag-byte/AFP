@@ -9,6 +9,7 @@ export default async function AdminCompetitionsPage() {
   const { data: competitions } = await supabase
     .from("competitions")
     .select("id, name, season, status, description, created_at, organizers(organization_name)")
+    .is("deleted_at", null)
     .order("created_at", { ascending: false });
 
   type Row = {

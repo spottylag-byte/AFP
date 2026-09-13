@@ -29,6 +29,7 @@ export default async function CompetitionDetailPage({
     .from("competitions")
     .select("id, name, season, status, organizer_id")
     .eq("id", competitionId)
+    .is("deleted_at", null)
     .single();
 
   if (!competition || !organizer || competition.organizer_id !== organizer.id) {
@@ -64,6 +65,7 @@ export default async function CompetitionDetailPage({
       "id, scheduled_at, status, assigned_operator_profile_id, home_score, away_score, home:teams!home_team_id(name), away:teams!away_team_id(name), operator:profiles!assigned_operator_profile_id(full_name)"
     )
     .eq("competition_id", competitionId)
+    .is("deleted_at", null)
     .order("scheduled_at", { ascending: true });
 
   type FixtureRow = {

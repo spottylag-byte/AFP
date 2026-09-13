@@ -13,6 +13,7 @@ export default async function TeamManagerDashboard() {
     .from("teams")
     .select("id, name")
     .eq("team_manager_profile_id", user.id)
+    .is("deleted_at", null)
     .maybeSingle();
 
   if (!team) {

@@ -3,8 +3,8 @@
 :root {
   --background: #f6f2e9;
   --foreground: #16213a;
-  --color-primary: #c1743b;
-  --color-primary-hover: #96572a;
+  --color-primary: #1f5c3f;
+  --color-primary-hover: #163f2b;
   --color-accent: #d9a441;
   --color-accent-hover: #b9860e;
   --color-pitch: #1f5c3f;
@@ -34,8 +34,8 @@
   :root {
     --background: #16213a;
     --foreground: #f6f2e9;
-    --color-primary: #d98249;
-    --color-primary-hover: #e0985f;
+    --color-primary: #2f9d64;
+    --color-primary-hover: #3fbb79;
     --color-accent: #d9a441;
     --color-accent-hover: #e6b866;
   }

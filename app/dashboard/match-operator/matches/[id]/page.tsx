@@ -21,6 +21,7 @@ export default async function MatchCenterPage({
       "id, status, scheduled_at, assigned_operator_profile_id, home_team_id, away_team_id, home_score, away_score, home:teams!home_team_id(id, name), away:teams!away_team_id(id, name)"
     )
     .eq("id", matchId)
+    .is("deleted_at", null)
     .single();
 
   type MatchDetail = {

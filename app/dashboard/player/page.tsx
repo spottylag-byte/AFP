@@ -15,6 +15,7 @@ export default async function PlayerDashboard() {
       "id, full_name, alias, photo_url, photo_confirmed_by_player, football_ids(code)"
     )
     .eq("profile_id", user.id)
+    .is("deleted_at", null)
     .maybeSingle();
 
   type Player = {

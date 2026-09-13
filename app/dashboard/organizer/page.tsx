@@ -34,6 +34,7 @@ export default async function OrganizerDashboard() {
     .from("competitions")
     .select("id, name, season, status, created_at")
     .eq("organizer_id", organizer.id)
+    .is("deleted_at", null)
     .order("created_at", { ascending: false });
 
   const isPremium =

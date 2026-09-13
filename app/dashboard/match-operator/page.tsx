@@ -13,6 +13,7 @@ export default async function MatchOperatorDashboard() {
     )
     .eq("assigned_operator_profile_id", user.id)
     .neq("status", "finished")
+    .is("deleted_at", null)
     .order("scheduled_at", { ascending: true });
 
   type MatchRow = {

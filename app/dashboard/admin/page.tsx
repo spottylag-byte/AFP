@@ -35,9 +35,9 @@ export default async function AdminDashboard() {
     { data: draftCompetitions },
   ] = await Promise.all([
     supabase.from("profiles").select("role"),
-    supabase.from("competitions").select("status"),
-    supabase.from("teams").select("id", { count: "exact", head: true }),
-    supabase.from("players").select("id", { count: "exact", head: true }),
+    supabase.from("competitions").select("status").is("deleted_at", null),
+    supabase.from("teams").select("id", { count: "exact", head: true }).is("deleted_at", null),
+    supabase.from("players").select("id", { count: "exact", head: true }).is("deleted_at", null),
     supabase.from("matches").select("status"),
     supabase.from("competition_payments").select("amount").eq("status", "completed"),
     supabase
@@ -49,6 +49,7 @@ export default async function AdminDashboard() {
       .from("competitions")
       .select("id, name, season, created_at, organizers(organization_name)")
       .eq("status", "draft")
+      .is("deleted_at", null)
       .order("created_at", { ascending: false }),
   ]);
 
